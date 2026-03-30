@@ -1,6 +1,6 @@
 # Railway Configuration for Backend
 [build]
-builder = "NIXPACKS"
+builder = "RAILPACK"
 buildCommand = "npm run build"
 watchPatterns = ["src/**", "package.json", "tsconfig.json"]
 rootDirectory = "backend"
@@ -23,8 +23,6 @@ healthcheckCommand = "curl -f http://localhost:3001/health || exit 1"
 NODE_ENV = "production"
 PORT = "3001"
 ROOT_DIRECTORY = "backend"
-NIXPACKS_BUILD_COMMAND = "npm run build"
-NIXPACKS_START_COMMAND = "npm run start:prod"
 
 [[services]]
 name = "backend"
@@ -63,7 +61,3 @@ name = "intentional-db"
 [redis]
 name = "intentional-redis"
 
-# Explicitly tell Railway this is a Node.js backend project
-[project]
-type = "backend"
-framework = "nestjs"
