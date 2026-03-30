@@ -63,7 +63,3 @@ name = "intentional-db"
 [redis]
 name = "intentional-redis"
 
-# Explicitly tell Railway this is a Node.js backend project
-[project]
-type = "backend"
-framework = "nestjs"
