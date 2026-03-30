@@ -124,15 +124,13 @@ jobs:
     - name: Run Database Migrations
       if: github.event.inputs.migrate == 'true'
       run: |
-        cd backend
         echo "Running database migrations..."
-        railway run "npm run migration:run" --environment ${{ github.event.inputs.environment || 'staging' }}
+        railway run "npm run migration:run" --service backend --environment ${{ github.event.inputs.environment || 'staging' }}
         echo "Database migrations completed"
     
     - name: Deploy to Railway
       run: |
-        cd backend
-        railway up --environment ${{ github.event.inputs.environment || 'staging' }}
+        railway up --service backend --environment ${{ github.event.inputs.environment || 'staging' }}
     
     - name: Get deployment URL
       id: deployment
@@ -153,11 +151,10 @@ jobs:
           echo "Health check failed"
           if [ "${{ github.event.inputs.rollback_enabled }}" = "true" ]; then
             echo "Initiating rollback..."
-            cd backend
-            railway rollback --environment ${{ github.event.inputs.environment || 'staging' }}
+            railway rollback --service backend --environment ${{ github.event.inputs.environment || 'staging' }}
             if [ "${{ github.event.inputs.migrate }}" = "true" ]; then
               echo "Rolling back database migrations..."
-              railway run "npm run migration:rollback" --environment ${{ github.event.inputs.environment || 'staging' }}
+              railway run "npm run migration:rollback" --service backend --environment ${{ github.event.inputs.environment || 'staging' }}
             fi
           fi
           exit 1
@@ -239,15 +236,13 @@ jobs:
     
     - name: Deploy to Temporary Environment
       run: |
-        cd backend
-        railway up --environment "$TEMP_ENV"
+        railway up --service backend --environment "$TEMP_ENV"
     
     - name: Test Database Migrations
       if: github.event.inputs.migrate == 'true'
       run: |
-        cd backend
         echo "Testing database migrations in temporary environment..."
-        railway run "npm run migration:run" --environment "$TEMP_ENV"
+        railway run "npm run migration:run" --service backend --environment "$TEMP_ENV"
         echo "Database migrations tested successfully"
     
     - name: Health Check Temporary Environment
@@ -263,8 +258,7 @@ jobs:
           echo "Temporary environment health check failed"
           if [ "${{ github.event.inputs.migrate }}" = "true" ]; then
             echo "Rolling back test migrations..."
-            cd backend
-            railway run "npm run migration:rollback" --environment "$TEMP_ENV"
+            railway run "npm run migration:rollback" --service backend --environment "$TEMP_ENV"
           fi
           railway environment delete "$TEMP_ENV" --force
           exit 1
@@ -272,15 +266,13 @@ jobs:
     
     - name: Deploy to Production
       run: |
-        cd backend
-        railway up --environment production
+        railway up --service backend --environment production
     
     - name: Production Database Migrations
       if: github.event.inputs.migrate == 'true'
       run: |
-        cd backend
         echo "Running production database migrations..."
-        railway run "npm run migration:run" --environment production
+        railway run "npm run migration:run" --service backend --environment production
         echo "Production migrations completed"
     
     - name: Production Health Check
@@ -293,11 +285,10 @@ jobs:
           echo "Production backend is healthy!"
         ' || {
           echo "Production health check failed, initiating rollback..."
-          cd backend
-          railway rollback --environment production
+          railway rollback --service backend --environment production
           if [ "${{ github.event.inputs.migrate }}" = "true" ]; then
             echo "Rolling back database migrations..."
-            railway run "npm run migration:rollback" --environment production
+            railway run "npm run migration:rollback" --service backend --environment production
           fi
           exit 1
         }

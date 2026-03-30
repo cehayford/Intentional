@@ -96,8 +96,7 @@ jobs:
     
     - name: Deploy to Railway
       run: |
-        cd frontend
-        railway up --environment ${{ github.event.inputs.environment || 'staging' }}
+        railway up --service frontend --environment ${{ github.event.inputs.environment || 'staging' }}
     
     - name: Get deployment URL
       id: deployment
@@ -118,8 +117,7 @@ jobs:
           echo "Health check failed"
           if [ "${{ github.event.inputs.rollback_enabled }}" = "true" ]; then
             echo "Initiating rollback..."
-            cd frontend
-            railway rollback --environment ${{ github.event.inputs.environment || 'staging' }}
+            railway rollback --service frontend --environment ${{ github.event.inputs.environment || 'staging' }}
           fi
           exit 1
         }
@@ -173,8 +171,7 @@ jobs:
     
     - name: Deploy to Temporary Environment
       run: |
-        cd frontend
-        railway up --environment "$TEMP_ENV"
+        railway up --service frontend --environment "$TEMP_ENV"
     
     - name: Health Check Temporary Environment
       run: |
@@ -193,8 +190,7 @@ jobs:
     
     - name: Deploy to Production
       run: |
-        cd frontend
-        railway up --environment production
+        railway up --service frontend --environment production
     
     - name: Production Health Check
       run: |
@@ -206,8 +202,7 @@ jobs:
           echo "Production frontend is healthy!"
         ' || {
           echo "Production health check failed, initiating rollback..."
-          cd frontend
-          railway rollback --environment production
+          railway rollback --service frontend --environment production
           exit 1
         }
     

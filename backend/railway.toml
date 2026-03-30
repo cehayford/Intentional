@@ -1,12 +1,15 @@
 # Railway Configuration for Backend
 [build]
 builder = "NIXPACKS"
+buildCommand = "npm run build"
+watchPatterns = ["src/**", "package.json", "tsconfig.json"]
 
 [deploy]
-startCommand = "npm run build && npm run start:prod"
+startCommand = "npm run start:prod"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
+healthcheckCommand = "curl -f http://localhost:3001/health || exit 1"
 
 [env]
 NODE_ENV = "production"
@@ -40,9 +43,16 @@ enabled = true
 port = 9101
 path = "/metrics"
 
+# Database configuration
 [database]
 type = "postgres"
 name = "intentional-db"
 
+# Redis configuration
 [redis]
 name = "intentional-redis"
+
+# Explicitly tell Railway this is a Node.js backend project
+[project]
+type = "backend"
+framework = "nestjs"

@@ -1,0 +1,36 @@
+# Root Railway Configuration for Monorepo
+# This file tells Railway how to handle the multi-service project
+
+[build]
+builder = "NIXPACKS"
+
+# Define the services in this monorepo
+[[services]]
+name = "frontend"
+source = "./frontend"
+healthcheckPath = "/"
+healthcheckTimeout = 300
+
+[[services]]
+name = "backend"
+source = "./backend"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+
+# Global environment variables
+[env]
+NODE_ENV = "production"
+
+# Database configuration for the project
+[database]
+type = "postgres"
+name = "intentional-db"
+
+# Redis configuration
+[redis]
+name = "intentional-redis"
+
+# Project metadata
+[project]
+name = "intentional"
+type = "monorepo"

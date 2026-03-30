@@ -103,18 +103,16 @@ health_check() {
 
 # Deploy frontend
 deploy_frontend() {
-    log_info "Deploying frontend to $ENVIRONMENT..."
-    
-    cd frontend
+    log_info "Deploying frontend service to $ENVIRONMENT..."
     
     # Set environment variables
     export VITE_API_URL=$(echo "$ENV_CONFIG" | jq -r '.variables.BACKEND_URL')
     
     # Deploy to Railway
-    railway up --environment "$ENVIRONMENT"
+    railway up --service frontend --environment "$ENVIRONMENT"
     
     # Get the deployed URL
-    FRONTEND_URL=$(railway status --json | jq -r '.services[] | select(.name == "frontend") | .url')
+    FRONTEND_URL=$(railway status --json --environment "$ENVIRONMENT" | jq -r '.services[] | select(.name == "frontend") | .url')
     
     # Health check
     if health_check "$FRONTEND_URL" "$HEALTH_CHECK_TIMEOUT"; then
@@ -126,27 +124,23 @@ deploy_frontend() {
         fi
         exit 1
     fi
-    
-    cd ..
 }
 
 # Deploy backend
 deploy_backend() {
-    log_info "Deploying backend to $ENVIRONMENT..."
-    
-    cd backend
+    log_info "Deploying backend service to $ENVIRONMENT..."
     
     # Run database migrations (if enabled)
     if [ "$(echo "$ENV_CONFIG" | jq -r '.database.migrations.autoApply')" = "true" ]; then
         log_info "Running database migrations..."
-        railway run "npm run migration:run" --environment "$ENVIRONMENT"
+        railway run "npm run migration:run" --service backend --environment "$ENVIRONMENT"
     fi
     
     # Deploy to Railway
-    railway up --environment "$ENVIRONMENT"
+    railway up --service backend --environment "$ENVIRONMENT"
     
     # Get the deployed URL
-    BACKEND_URL=$(railway status --json | jq -r '.services[] | select(.name == "backend") | .url')
+    BACKEND_URL=$(railway status --json --environment "$ENVIRONMENT" | jq -r '.services[] | select(.name == "backend") | .url')
     
     # Health check
     if health_check "$BACKEND_URL" "$HEALTH_CHECK_TIMEOUT"; then
@@ -158,8 +152,6 @@ deploy_backend() {
         fi
         exit 1
     fi
-    
-    cd ..
 }
 
 # Rollback functions
@@ -189,15 +181,11 @@ blue_green_deploy() {
     log_info "Deploying to temporary environment for validation..."
     
     if [ "$SERVICE" = "all" ] || [ "$SERVICE" = "frontend" ]; then
-        cd frontend
-        railway up --environment "$TEMP_ENV"
-        cd ..
+        railway up --service frontend --environment "$TEMP_ENV"
     fi
     
     if [ "$SERVICE" = "all" ] || [ "$SERVICE" = "backend" ]; then
-        cd backend
-        railway up --environment "$TEMP_ENV"
-        cd ..
+        railway up --service backend --environment "$TEMP_ENV"
     fi
     
     # Get temporary URLs for health checks
@@ -225,6 +213,8 @@ blue_green_deploy() {
     log_info "Swapping environments for zero downtime deployment..."
     
     # Deploy to production environment
+    log_info "Deploying to production environment..."
+    
     if [ "$SERVICE" = "all" ] || [ "$SERVICE" = "frontend" ]; then
         deploy_frontend
     fi
