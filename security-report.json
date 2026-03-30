@@ -1,0 +1,878 @@
+{
+  "executionTime": "1186ms",
+  "timestamp": "2026-03-30T06:47:20.615Z",
+  "testSuite": {
+    "timestamp": "2026-03-30T06:47:20.067Z",
+    "summary": {
+      "totalTests": 31,
+      "passedTests": 21,
+      "failedTests": 10,
+      "successRate": "67.74%"
+    },
+    "testResults": [
+      {
+        "category": "Secrets Detection",
+        "message": "Should detect at least 3 hardcoded secrets",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:19.497Z"
+      },
+      {
+        "category": "Secrets Detection",
+        "message": "Should detect secrets in insecure.js",
+        "passed": false,
+        "timestamp": "2026-03-30T06:47:19.498Z"
+      },
+      {
+        "category": "Secrets Detection",
+        "message": "Should detect .env file in git",
+        "passed": false,
+        "timestamp": "2026-03-30T06:47:19.498Z"
+      },
+      {
+        "category": "Secrets Detection",
+        "message": "All secret violations should be critical",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:19.498Z"
+      },
+      {
+        "category": "Dependency Vulnerability Detection",
+        "message": "Should detect at least 2 vulnerable dependencies",
+        "passed": false,
+        "timestamp": "2026-03-30T06:47:19.501Z"
+      },
+      {
+        "category": "Dependency Vulnerability Detection",
+        "message": "Should detect vulnerable lodash version",
+        "passed": false,
+        "timestamp": "2026-03-30T06:47:19.501Z"
+      },
+      {
+        "category": "Dependency Vulnerability Detection",
+        "message": "Should detect vulnerable axios version",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:19.501Z"
+      },
+      {
+        "category": "Input Validation Detection",
+        "message": "Should detect SQL injection vulnerability",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:19.539Z"
+      },
+      {
+        "category": "Input Validation Detection",
+        "message": "Should detect XSS vulnerability",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:19.540Z"
+      },
+      {
+        "category": "Input Validation Detection",
+        "message": "SQL injection should be critical severity",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:19.540Z"
+      },
+      {
+        "category": "Authentication Security",
+        "message": "Should detect weak JWT secret",
+        "passed": false,
+        "timestamp": "2026-03-30T06:47:19.575Z"
+      },
+      {
+        "category": "Authentication Security",
+        "message": "Should warn about missing token expiration",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:19.575Z"
+      },
+      {
+        "category": "Container Security",
+        "message": "Should detect container running as root",
+        "passed": false,
+        "timestamp": "2026-03-30T06:47:19.578Z"
+      },
+      {
+        "category": "Container Security",
+        "message": "Root container should be high severity",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:19.579Z"
+      },
+      {
+        "category": "Network Security",
+        "message": "Should warn about missing CORS configuration",
+        "passed": false,
+        "timestamp": "2026-03-30T06:47:19.633Z"
+      },
+      {
+        "category": "Network Security",
+        "message": "Should warn about missing rate limiting",
+        "passed": false,
+        "timestamp": "2026-03-30T06:47:19.633Z"
+      },
+      {
+        "category": "Audit Logging Detection",
+        "message": "Should warn about missing audit logging",
+        "passed": false,
+        "timestamp": "2026-03-30T06:47:19.675Z"
+      },
+      {
+        "category": "Audit Logging Detection",
+        "message": "Should warn about missing security logging",
+        "passed": false,
+        "timestamp": "2026-03-30T06:47:19.676Z"
+      },
+      {
+        "category": "Code Quality Security",
+        "message": "Should detect eval() usage",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:19.716Z"
+      },
+      {
+        "category": "Code Quality Security",
+        "message": "Should warn about console.log",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:19.717Z"
+      },
+      {
+        "category": "Code Quality Security",
+        "message": "Should warn about debugger statements",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:19.717Z"
+      },
+      {
+        "category": "Security Score Calculation",
+        "message": "Security score should be a number",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:20.063Z"
+      },
+      {
+        "category": "Security Score Calculation",
+        "message": "Security score should be between 0 and 100",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:20.064Z"
+      },
+      {
+        "category": "Security Score Calculation",
+        "message": "Score should be low given the security issues",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:20.064Z"
+      },
+      {
+        "category": "Report Generation",
+        "message": "Report should have timestamp",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:20.065Z"
+      },
+      {
+        "category": "Report Generation",
+        "message": "Report should have summary",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:20.065Z"
+      },
+      {
+        "category": "Report Generation",
+        "message": "Report should have violations",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:20.066Z"
+      },
+      {
+        "category": "Report Generation",
+        "message": "Report should have warnings",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:20.066Z"
+      },
+      {
+        "category": "Report Generation",
+        "message": "Report should have recommendations",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:20.066Z"
+      },
+      {
+        "category": "Report Generation",
+        "message": "Violations should be an array",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:20.066Z"
+      },
+      {
+        "category": "Report Generation",
+        "message": "Warnings should be an array",
+        "passed": true,
+        "timestamp": "2026-03-30T06:47:20.066Z"
+      }
+    ],
+    "coverage": {
+      "secretsDetection": true,
+      "dependencyVulnerabilityDetection": true,
+      "inputValidationDetection": true,
+      "authenticationSecurity": true,
+      "containerSecurity": true,
+      "networkSecurity": true,
+      "auditLoggingDetection": true,
+      "codeQualitySecurity": true,
+      "securityScoreCalculation": true,
+      "reportGeneration": true
+    },
+    "recommendations": [
+      {
+        "priority": "HIGH",
+        "action": "Fix failing security tests",
+        "details": "10 tests failed. Review and fix the underlying security issues."
+      },
+      {
+        "priority": "MEDIUM",
+        "action": "Expand test coverage",
+        "details": "Add more edge cases and boundary condition tests."
+      },
+      {
+        "priority": "LOW",
+        "action": "Automate security testing",
+        "details": "Integrate security tests into CI/CD pipeline."
+      }
+    ]
+  },
+  "securityAnalysis": {
+    "timestamp": "2026-03-30T06:47:20.588Z",
+    "summary": {
+      "totalChecks": 65,
+      "criticalViolations": 23,
+      "highViolations": 6,
+      "mediumViolations": 0,
+      "lowViolations": 0,
+      "totalViolations": 29,
+      "totalWarnings": 26,
+      "totalPassed": 10,
+      "securityScore": 0
+    },
+    "violations": [
+      {
+        "type": "HARDCODED_SECRET",
+        "file": "frontend\\src\\pages\\RegisterPage.jsx",
+        "line": 18,
+        "issue": "Hardcoded secret detected: password = 'Minimum 8 characters'",
+        "severity": "CRITICAL",
+        "recommendation": "Use environment variables or secret management system"
+      },
+      {
+        "type": "HARDCODED_SECRET",
+        "file": "security\\security-check.test.js",
+        "line": 26,
+        "issue": "Hardcoded secret detected: password = \"secret123\"",
+        "severity": "CRITICAL",
+        "recommendation": "Use environment variables or secret management system"
+      },
+      {
+        "type": "HARDCODED_SECRET",
+        "file": "security\\security-check.test.js",
+        "line": 56,
+        "issue": "Hardcoded secret detected: Secret = \"weaksecret\"",
+        "severity": "CRITICAL",
+        "recommendation": "Use environment variables or secret management system"
+      },
+      {
+        "type": "VULNERABLE_DEPENDENCY",
+        "file": "frontend/package.json",
+        "issue": "Vulnerable package: axios@^1.6.7",
+        "severity": "HIGH",
+        "recommendation": "Update to 0.21.1 or higher"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "backend\\dist\\modules\\analytics\\analytics.controller.js",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "backend\\dist\\modules\\expenses\\expenses.service.js",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "backend\\healthcheck.js",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "backend\\src\\modules\\analytics\\analytics.controller.ts",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "backend\\src\\modules\\expenses\\expenses.service.ts",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "frontend\\src\\api\\client.js",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "frontend\\src\\components\\layout\\AppLayout.jsx",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "frontend\\src\\components\\layout\\LoadingSpinner.jsx",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "frontend\\src\\components\\visualizations\\SurplusRing.jsx",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "frontend\\src\\context\\ToastContext.jsx",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "frontend\\src\\pages\\AnalyticsPage.jsx",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "frontend\\src\\pages\\BudgetsPage.jsx",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "frontend\\src\\pages\\DashboardPage.jsx",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "frontend\\src\\pages\\EducationPage.jsx",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "frontend\\src\\pages\\ExpensesPage.jsx",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "frontend\\src\\pages\\LoginPage.jsx",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "frontend\\src\\pages\\RegisterPage.jsx",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "security\\run-security-check.js",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "security\\security-check.js",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "XSS_VULNERABILITY",
+        "file": "security\\security-check.js",
+        "issue": "Potential XSS vulnerability",
+        "severity": "HIGH",
+        "recommendation": "Use proper sanitization or avoid innerHTML"
+      },
+      {
+        "type": "SQL_INJECTION_RISK",
+        "file": "security\\security-check.test.js",
+        "issue": "Potential SQL injection vulnerability",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries or ORM"
+      },
+      {
+        "type": "XSS_VULNERABILITY",
+        "file": "security\\security-check.test.js",
+        "issue": "Potential XSS vulnerability",
+        "severity": "HIGH",
+        "recommendation": "Use proper sanitization or avoid innerHTML"
+      },
+      {
+        "type": "PERMISSIVE_CORS",
+        "file": "security\\security-check.js",
+        "issue": "Overly permissive CORS policy detected",
+        "severity": "HIGH",
+        "recommendation": "Restrict CORS to specific domains"
+      },
+      {
+        "type": "EVAL_USAGE",
+        "file": "security\\security-check.js",
+        "issue": "eval() function detected",
+        "severity": "HIGH",
+        "recommendation": "Avoid eval() for security reasons"
+      },
+      {
+        "type": "EVAL_USAGE",
+        "file": "security\\security-check.test.js",
+        "issue": "eval() function detected",
+        "severity": "HIGH",
+        "recommendation": "Avoid eval() for security reasons"
+      }
+    ],
+    "warnings": [
+      {
+        "type": "HTTP_AUTH",
+        "file": "backend\\dist\\modules\\auth\\auth.controller.d.ts",
+        "issue": "Authentication over HTTP detected",
+        "severity": "HIGH",
+        "recommendation": "Enforce HTTPS for all authentication flows"
+      },
+      {
+        "type": "HTTP_AUTH",
+        "file": "backend\\dist\\modules\\auth\\auth.controller.js",
+        "issue": "Authentication over HTTP detected",
+        "severity": "HIGH",
+        "recommendation": "Enforce HTTPS for all authentication flows"
+      },
+      {
+        "type": "HTTP_AUTH",
+        "file": "backend\\dist\\modules\\auth\\auth.module.js",
+        "issue": "Authentication over HTTP detected",
+        "severity": "HIGH",
+        "recommendation": "Enforce HTTPS for all authentication flows"
+      },
+      {
+        "type": "MISSING_TOKEN_EXPIRATION",
+        "file": "backend\\dist\\modules\\auth\\auth.service.d.ts",
+        "issue": "JWT token may not have proper expiration",
+        "severity": "MEDIUM",
+        "recommendation": "Set appropriate token expiration time"
+      },
+      {
+        "type": "HTTP_AUTH",
+        "file": "backend\\dist\\modules\\auth\\auth.service.d.ts",
+        "issue": "Authentication over HTTP detected",
+        "severity": "HIGH",
+        "recommendation": "Enforce HTTPS for all authentication flows"
+      },
+      {
+        "type": "HTTP_AUTH",
+        "file": "backend\\dist\\modules\\auth\\auth.service.js",
+        "issue": "Authentication over HTTP detected",
+        "severity": "HIGH",
+        "recommendation": "Enforce HTTPS for all authentication flows"
+      },
+      {
+        "type": "HTTP_AUTH",
+        "file": "backend\\dist\\modules\\auth\\dto\\login.dto.js",
+        "issue": "Authentication over HTTP detected",
+        "severity": "HIGH",
+        "recommendation": "Enforce HTTPS for all authentication flows"
+      },
+      {
+        "type": "MISSING_TOKEN_EXPIRATION",
+        "file": "backend\\dist\\modules\\auth\\jwt-auth.guard.js",
+        "issue": "JWT token may not have proper expiration",
+        "severity": "MEDIUM",
+        "recommendation": "Set appropriate token expiration time"
+      },
+      {
+        "type": "HTTP_AUTH",
+        "file": "backend\\dist\\modules\\auth\\jwt-auth.guard.js",
+        "issue": "Authentication over HTTP detected",
+        "severity": "HIGH",
+        "recommendation": "Enforce HTTPS for all authentication flows"
+      },
+      {
+        "type": "MISSING_TOKEN_EXPIRATION",
+        "file": "backend\\dist\\modules\\auth\\jwt.strategy.d.ts",
+        "issue": "JWT token may not have proper expiration",
+        "severity": "MEDIUM",
+        "recommendation": "Set appropriate token expiration time"
+      },
+      {
+        "type": "MISSING_TOKEN_EXPIRATION",
+        "file": "backend\\dist\\modules\\auth\\jwt.strategy.js",
+        "issue": "JWT token may not have proper expiration",
+        "severity": "MEDIUM",
+        "recommendation": "Set appropriate token expiration time"
+      },
+      {
+        "type": "HTTP_AUTH",
+        "file": "backend\\src\\modules\\auth\\auth.controller.ts",
+        "issue": "Authentication over HTTP detected",
+        "severity": "HIGH",
+        "recommendation": "Enforce HTTPS for all authentication flows"
+      },
+      {
+        "type": "HTTP_AUTH",
+        "file": "backend\\src\\modules\\auth\\auth.module.ts",
+        "issue": "Authentication over HTTP detected",
+        "severity": "HIGH",
+        "recommendation": "Enforce HTTPS for all authentication flows"
+      },
+      {
+        "type": "HTTP_AUTH",
+        "file": "backend\\src\\modules\\auth\\auth.service.ts",
+        "issue": "Authentication over HTTP detected",
+        "severity": "HIGH",
+        "recommendation": "Enforce HTTPS for all authentication flows"
+      },
+      {
+        "type": "MISSING_TOKEN_EXPIRATION",
+        "file": "backend\\src\\modules\\auth\\jwt-auth.guard.ts",
+        "issue": "JWT token may not have proper expiration",
+        "severity": "MEDIUM",
+        "recommendation": "Set appropriate token expiration time"
+      },
+      {
+        "type": "MISSING_TOKEN_EXPIRATION",
+        "file": "backend\\src\\modules\\auth\\jwt.strategy.ts",
+        "issue": "JWT token may not have proper expiration",
+        "severity": "MEDIUM",
+        "recommendation": "Set appropriate token expiration time"
+      },
+      {
+        "type": "MISSING_HTTPS",
+        "issue": "HTTPS/TLS configuration not detected",
+        "severity": "HIGH",
+        "recommendation": "Configure HTTPS/TLS for all communications"
+      },
+      {
+        "type": "MISSING_DB_ENCRYPTION",
+        "issue": "Database encryption configuration not detected",
+        "severity": "MEDIUM",
+        "recommendation": "Configure database encryption at rest and in transit"
+      },
+      {
+        "type": "DEV_PORT_EXPOSED",
+        "file": "backend/Dockerfile",
+        "issue": "Development port 3001 exposed in production",
+        "severity": "LOW",
+        "recommendation": "Use production-appropriate ports"
+      },
+      {
+        "type": "CONSOLE_LOG",
+        "file": "backend\\dist\\main.js",
+        "issue": "console.log detected in production code",
+        "severity": "LOW",
+        "recommendation": "Remove console.log statements or use proper logging"
+      },
+      {
+        "type": "CONSOLE_LOG",
+        "file": "backend\\healthcheck.js",
+        "issue": "console.log detected in production code",
+        "severity": "LOW",
+        "recommendation": "Remove console.log statements or use proper logging"
+      },
+      {
+        "type": "CONSOLE_LOG",
+        "file": "backend\\src\\main.ts",
+        "issue": "console.log detected in production code",
+        "severity": "LOW",
+        "recommendation": "Remove console.log statements or use proper logging"
+      },
+      {
+        "type": "CONSOLE_LOG",
+        "file": "security\\run-security-check.js",
+        "issue": "console.log detected in production code",
+        "severity": "LOW",
+        "recommendation": "Remove console.log statements or use proper logging"
+      },
+      {
+        "type": "CONSOLE_LOG",
+        "file": "security\\security-check.js",
+        "issue": "console.log detected in production code",
+        "severity": "LOW",
+        "recommendation": "Remove console.log statements or use proper logging"
+      },
+      {
+        "type": "DEBUGGER_STATEMENT",
+        "file": "security\\security-check.js",
+        "issue": "debugger statement detected",
+        "severity": "LOW",
+        "recommendation": "Remove debugger statements"
+      },
+      {
+        "type": "DEBUGGER_STATEMENT",
+        "file": "security\\security-check.test.js",
+        "issue": "debugger statement detected",
+        "severity": "LOW",
+        "recommendation": "Remove debugger statements"
+      }
+    ],
+    "passedChecks": [
+      "Secrets Management Check",
+      "Dependency Security Check",
+      "Input Validation Check",
+      "Authentication Flows Check",
+      "Data Encryption Check",
+      "Access Controls Check",
+      "Audit Logging Check",
+      "Network Security Check",
+      "Container Security Check",
+      "Code Quality Check"
+    ],
+    "recommendations": [
+      {
+        "priority": "IMMEDIATE",
+        "action": "Remove all hardcoded secrets and implement proper secret management",
+        "details": "Use environment variables, AWS Secrets Manager, or HashiCorp Vault"
+      },
+      {
+        "priority": "IMMEDIATE",
+        "action": "Fix SQL injection vulnerabilities",
+        "details": "Use parameterized queries, ORM, or prepared statements"
+      },
+      {
+        "priority": "IMMEDIATE",
+        "action": "Fix XSS vulnerabilities",
+        "details": "Use proper input sanitization and avoid innerHTML"
+      },
+      {
+        "priority": "HIGH",
+        "action": "Implement HTTPS/TLS",
+        "details": "Configure SSL/TLS certificates and enforce HTTPS"
+      }
+    ]
+  },
+  "overallAssessment": {
+    "assessment": "CRITICAL",
+    "riskLevel": "HIGH",
+    "securityScore": 0,
+    "testSuccessRate": "67.74%",
+    "recommendation": "Immediate action required. Address all critical security vulnerabilities before proceeding."
+  },
+  "actionItems": [
+    {
+      "priority": "IMMEDIATE",
+      "category": "Critical Security",
+      "description": "Fix 23 critical security vulnerabilities",
+      "items": [
+        {
+          "action": "Use environment variables or secret management system",
+          "file": "frontend\\src\\pages\\RegisterPage.jsx",
+          "type": "HARDCODED_SECRET"
+        },
+        {
+          "action": "Use environment variables or secret management system",
+          "file": "security\\security-check.test.js",
+          "type": "HARDCODED_SECRET"
+        },
+        {
+          "action": "Use environment variables or secret management system",
+          "file": "security\\security-check.test.js",
+          "type": "HARDCODED_SECRET"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "backend\\dist\\modules\\analytics\\analytics.controller.js",
+          "type": "SQL_INJECTION_RISK"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "backend\\dist\\modules\\expenses\\expenses.service.js",
+          "type": "SQL_INJECTION_RISK"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "backend\\healthcheck.js",
+          "type": "SQL_INJECTION_RISK"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "backend\\src\\modules\\analytics\\analytics.controller.ts",
+          "type": "SQL_INJECTION_RISK"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "backend\\src\\modules\\expenses\\expenses.service.ts",
+          "type": "SQL_INJECTION_RISK"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "frontend\\src\\api\\client.js",
+          "type": "SQL_INJECTION_RISK"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "frontend\\src\\components\\layout\\AppLayout.jsx",
+          "type": "SQL_INJECTION_RISK"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "frontend\\src\\components\\layout\\LoadingSpinner.jsx",
+          "type": "SQL_INJECTION_RISK"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "frontend\\src\\components\\visualizations\\SurplusRing.jsx",
+          "type": "SQL_INJECTION_RISK"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "frontend\\src\\context\\ToastContext.jsx",
+          "type": "SQL_INJECTION_RISK"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "frontend\\src\\pages\\AnalyticsPage.jsx",
+          "type": "SQL_INJECTION_RISK"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "frontend\\src\\pages\\BudgetsPage.jsx",
+          "type": "SQL_INJECTION_RISK"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "frontend\\src\\pages\\DashboardPage.jsx",
+          "type": "SQL_INJECTION_RISK"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "frontend\\src\\pages\\EducationPage.jsx",
+          "type": "SQL_INJECTION_RISK"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "frontend\\src\\pages\\ExpensesPage.jsx",
+          "type": "SQL_INJECTION_RISK"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "frontend\\src\\pages\\LoginPage.jsx",
+          "type": "SQL_INJECTION_RISK"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "frontend\\src\\pages\\RegisterPage.jsx",
+          "type": "SQL_INJECTION_RISK"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "security\\run-security-check.js",
+          "type": "SQL_INJECTION_RISK"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "security\\security-check.js",
+          "type": "SQL_INJECTION_RISK"
+        },
+        {
+          "action": "Use parameterized queries or ORM",
+          "file": "security\\security-check.test.js",
+          "type": "SQL_INJECTION_RISK"
+        }
+      ],
+      "deadline": "Within 24 hours"
+    },
+    {
+      "priority": "HIGH",
+      "category": "Security Hardening",
+      "description": "Address 6 high-priority security issues",
+      "items": [
+        {
+          "action": "Update to 0.21.1 or higher",
+          "file": "frontend/package.json",
+          "type": "VULNERABLE_DEPENDENCY"
+        },
+        {
+          "action": "Use proper sanitization or avoid innerHTML",
+          "file": "security\\security-check.js",
+          "type": "XSS_VULNERABILITY"
+        },
+        {
+          "action": "Use proper sanitization or avoid innerHTML",
+          "file": "security\\security-check.test.js",
+          "type": "XSS_VULNERABILITY"
+        },
+        {
+          "action": "Restrict CORS to specific domains",
+          "file": "security\\security-check.js",
+          "type": "PERMISSIVE_CORS"
+        },
+        {
+          "action": "Avoid eval() for security reasons",
+          "file": "security\\security-check.js",
+          "type": "EVAL_USAGE"
+        },
+        {
+          "action": "Avoid eval() for security reasons",
+          "file": "security\\security-check.test.js",
+          "type": "EVAL_USAGE"
+        }
+      ],
+      "deadline": "Within 1 week"
+    },
+    {
+      "priority": "STRATEGIC",
+      "category": "Security Strategy",
+      "description": "Implement strategic security improvements",
+      "items": [
+        {
+          "action": "Remove all hardcoded secrets and implement proper secret management",
+          "details": "Use environment variables, AWS Secrets Manager, or HashiCorp Vault"
+        },
+        {
+          "action": "Fix SQL injection vulnerabilities",
+          "details": "Use parameterized queries, ORM, or prepared statements"
+        },
+        {
+          "action": "Fix XSS vulnerabilities",
+          "details": "Use proper input sanitization and avoid innerHTML"
+        },
+        {
+          "action": "Implement HTTPS/TLS",
+          "details": "Configure SSL/TLS certificates and enforce HTTPS"
+        }
+      ],
+      "deadline": "Next sprint"
+    }
+  ],
+  "complianceStatus": {
+    "overall": "37.5%",
+    "standards": {
+      "secretsManagement": false,
+      "inputValidation": false,
+      "authenticationSecurity": true,
+      "containerSecurity": true,
+      "codeQuality": false,
+      "testCoverage": false,
+      "auditLogging": true,
+      "networkSecurity": false
+    },
+    "compliantCount": 3,
+    "totalStandards": 8,
+    "status": "NON_COMPLIANT"
+  }
+}
