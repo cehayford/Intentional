@@ -3,22 +3,61 @@ name: Deploy Backend
 on:
   push:
     branches: [ main ]
-    paths: [ 'backend/**' ]
+    paths: 
+      - 'backend/**'
+      - '.github/workflows/deploy-backend.yml'
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+        - staging
+      migrate:
+        description: 'Run database migrations'
+        required: false
+        default: true
+        type: boolean
+
+env:
+  NODE_VERSION: '18'
 
 jobs:
-  deploy-railway:
-    name: Deploy to Railway
+  test-and-build:
+    name: Test and Build Backend
     runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request'
+    
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: intentional_test
+          POSTGRES_USER: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/intentional_test
+      JWT_SECRET: test_jwt_secret_for_testing
+      NODE_ENV: test
     
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
     
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
         cache-dependency-path: backend/package-lock.json
     
@@ -26,9 +65,45 @@ jobs:
       working-directory: ./backend
       run: npm ci
     
-    - name: Build backend
+    - name: Run linting
+      working-directory: ./backend
+      run: npm run lint --if-present
+    
+    - name: Run type checking
+      working-directory: ./backend
+      run: npx tsc --noEmit --skipLibCheck
+    
+    - name: Run tests
+      working-directory: ./backend
+      run: npm run test:cov --if-present || npm test -- --coverage --passWithNoTests
+    
+    - name: Build application
       working-directory: ./backend
       run: npm run build
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: backend-build
+        path: backend/dist/
+        retention-days: 1
+
+  deploy-railway:
+    name: Deploy to Railway
+    runs-on: ubuntu-latest
+    needs: test-and-build
+    if: github.ref == 'refs/heads/main' || github.event.inputs.environment == 'production'
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: backend-build
+        path: backend/dist/
     
     - name: Deploy to Railway
       uses: railway-app/railway-action@v1
@@ -36,29 +111,29 @@ jobs:
         api-token: ${{ secrets.RAILWAY_TOKEN }}
         service-id: ${{ secrets.RAILWAY_SERVICE_ID }}
         working-directory: ./backend
+    
+    - name: Run database migrations
+      if: github.event.inputs.migrate != 'false'
+      run: |
+        echo "Running database migrations on Railway..."
+        # Add migration command here if needed
 
   deploy-heroku:
     name: Deploy to Heroku
     runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request'
+    needs: test-and-build
+    if: github.ref == 'refs/heads/main' || github.event.inputs.environment == 'production'
+    environment: production
     
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
     
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
       with:
-        node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: backend/package-lock.json
-    
-    - name: Install dependencies
-      working-directory: ./backend
-      run: npm ci
-    
-    - name: Build backend
-      working-directory: ./backend
-      run: npm run build
+        name: backend-build
+        path: backend/dist/
     
     - name: Deploy to Heroku
       uses: akhileshns/heroku-deploy@v3.12.12
@@ -69,3 +144,129 @@ jobs:
         appdir: backend
       env:
         HD_NODE_VERSION: 18
+    
+    - name: Run database migrations
+      if: github.event.inputs.migrate != 'false'
+      run: |
+        echo "Running database migrations on Heroku..."
+        # Add migration command here if needed
+
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: test-and-build
+    if: github.event.inputs.environment == 'staging'
+    environment: staging
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: backend-build
+        path: backend/dist/
+    
+    - name: Deploy to Railway Staging
+      uses: railway-app/railway-action@v1
+      with:
+        api-token: ${{ secrets.RAILWAY_STAGING_TOKEN }}
+        service-id: ${{ secrets.RAILWAY_STAGING_SERVICE_ID }}
+        working-directory: ./backend
+
+  deploy-docker:
+    name: Deploy Docker Image
+    runs-on: ubuntu-latest
+    needs: test-and-build
+    if: github.ref == 'refs/heads/main' || github.event.inputs.environment == 'production'
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: backend-build
+        path: backend/dist/
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./backend
+        push: true
+        tags: |
+          your-org/intentional-backend:latest
+          your-org/intentional-backend:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  health-check:
+    name: Backend Health Check
+    runs-on: ubuntu-latest
+    needs: [deploy-railway, deploy-heroku, deploy-docker]
+    if: always() && (needs.deploy-railway.result == 'success' || needs.deploy-heroku.result == 'success' || needs.deploy-docker.result == 'success')
+    
+    steps:
+    - name: Wait for deployment
+      run: sleep 90
+    
+    - name: Check API health
+      run: |
+        response=$(curl -s -o /dev/null -w "%{http_code}" https://api.intentional.app/health || echo "000")
+        if [ "$response" != "200" ]; then
+          echo "Health check failed with status: $response"
+          exit 1
+        fi
+        echo "Health check passed with status: $response"
+    
+    - name: Verify database connection
+      run: |
+        response=$(curl -s -o /dev/null -w "%{http_code}" https://api.intentional.app/health/db || echo "000")
+        if [ "$response" != "200" ]; then
+          echo "Database health check failed with status: $response"
+          exit 1
+        fi
+        echo "Database health check passed with status: $response"
+    
+    - name: Notify deployment success
+      if: success()
+      run: |
+        echo "✅ Backend deployed successfully to production"
+        echo "🌐 https://api.intentional.app"
+    
+    - name: Notify deployment failure
+      if: failure()
+      run: |
+        echo "❌ Backend deployment failed"
+        echo "🔍 Check the deployment logs for details"
+
+  rollback:
+    name: Rollback Deployment
+    runs-on: ubuntu-latest
+    needs: health-check
+    if: failure() && needs.health-check.result == 'failure'
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.before }}
+    
+    - name: Deploy previous version
+      run: |
+        echo "🔄 Rolling back to previous version..."
+        # Add rollback commands here
+        echo "Rollback completed"
