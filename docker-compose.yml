@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # Frontend Service
+  # Frontend Service (Railway-compatible)
   frontend:
     build:
       context: ./frontend
@@ -9,7 +9,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - REACT_APP_API_URL=http://localhost:3001
+      - VITE_API_URL=http://localhost:3001
+      - NODE_ENV=development
     depends_on:
       - backend
     volumes:
@@ -17,8 +18,14 @@ services:
       - /app/node_modules
     networks:
       - intentional-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
-  # Backend Service
+  # Backend Service (Railway-compatible)
   backend:
     build:
       context: ./backend
@@ -30,16 +37,25 @@ services:
       - JWT_SECRET=your-super-secret-jwt-key-change-in-production
       - NODE_ENV=development
       - PORT=3001
+      - REDIS_URL=redis://redis:6379
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
       - ./backend:/app
       - /app/node_modules
     networks:
       - intentional-network
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
-  # PostgreSQL Database
+  # PostgreSQL Database (Railway-compatible)
   postgres:
     image: postgres:15-alpine
     environment:
@@ -50,11 +66,17 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
       - intentional-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U intentional -d intentional"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
-  # Redis for caching and sessions
+  # Redis Cache (Railway-compatible)
   redis:
     image: redis:7-alpine
     ports:
@@ -63,8 +85,14 @@ services:
       - redis_data:/data
     networks:
       - intentional-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
-  # Nginx Reverse Proxy (Optional)
+  # Nginx Reverse Proxy (Optional for production-like setup)
   nginx:
     image: nginx:alpine
     ports:
@@ -78,11 +106,18 @@ services:
       - backend
     networks:
       - intentional-network
+    profiles:
+      - production
 
 volumes:
   postgres_data:
+    driver: local
   redis_data:
+    driver: local
 
 networks:
   intentional-network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

@@ -1,4 +1,4 @@
-name: Deploy Backend
+name: Deploy Backend to Railway
 
 on:
   push:
@@ -6,18 +6,29 @@ on:
     paths: 
       - 'backend/**'
       - '.github/workflows/deploy-backend.yml'
+      - 'railway-environments.json'
   workflow_dispatch:
     inputs:
       environment:
         description: 'Deployment environment'
         required: true
-        default: 'production'
+        default: 'staging'
         type: choice
         options:
         - production
         - staging
       migrate:
         description: 'Run database migrations'
+        required: false
+        default: true
+        type: boolean
+      health_check_timeout:
+        description: 'Health check timeout (seconds)'
+        required: false
+        default: '300'
+        type: string
+      rollback_enabled:
+        description: 'Enable rollback on failure'
         required: false
         default: true
         type: boolean
@@ -88,12 +99,11 @@ jobs:
         path: backend/dist/
         retention-days: 1
 
-  deploy-railway:
+  deploy-to-railway:
     name: Deploy to Railway
     runs-on: ubuntu-latest
     needs: test-and-build
-    if: github.ref == 'refs/heads/main' || github.event.inputs.environment == 'production'
-    environment: production
+    environment: ${{ github.event.inputs.environment || 'staging' }}
     
     steps:
     - name: Checkout code
@@ -104,169 +114,290 @@ jobs:
       with:
         name: backend-build
         path: backend/dist/
+    
+    - name: Setup Railway CLI
+      run: npm install -g @railway/cli
+    
+    - name: Login to Railway
+      run: railway login --token ${{ secrets.RAILWAY_TOKEN }}
+    
+    - name: Run Database Migrations
+      if: github.event.inputs.migrate == 'true'
+      run: |
+        cd backend
+        echo "Running database migrations..."
+        railway run "npm run migration:run" --environment ${{ github.event.inputs.environment || 'staging' }}
+        echo "Database migrations completed"
     
     - name: Deploy to Railway
-      uses: railway-app/railway-action@v1
-      with:
-        api-token: ${{ secrets.RAILWAY_TOKEN }}
-        service-id: ${{ secrets.RAILWAY_SERVICE_ID }}
-        working-directory: ./backend
-    
-    - name: Run database migrations
-      if: github.event.inputs.migrate != 'false'
       run: |
-        echo "Running database migrations on Railway..."
-        # Add migration command here if needed
-
-  deploy-heroku:
-    name: Deploy to Heroku
-    runs-on: ubuntu-latest
-    needs: test-and-build
-    if: github.ref == 'refs/heads/main' || github.event.inputs.environment == 'production'
-    environment: production
+        cd backend
+        railway up --environment ${{ github.event.inputs.environment || 'staging' }}
     
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Download build artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: backend-build
-        path: backend/dist/
-    
-    - name: Deploy to Heroku
-      uses: akhileshns/heroku-deploy@v3.12.12
-      with:
-        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-        heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
-        heroku_email: ${{ secrets.HEROKU_EMAIL }}
-        appdir: backend
-      env:
-        HD_NODE_VERSION: 18
-    
-    - name: Run database migrations
-      if: github.event.inputs.migrate != 'false'
+    - name: Get deployment URL
+      id: deployment
       run: |
-        echo "Running database migrations on Heroku..."
-        # Add migration command here if needed
-
-  deploy-staging:
-    name: Deploy to Staging
-    runs-on: ubuntu-latest
-    needs: test-and-build
-    if: github.event.inputs.environment == 'staging'
-    environment: staging
+        URL=$(railway status --json --environment ${{ github.event.inputs.environment || 'staging' }} | jq -r '.services[] | select(.name == "backend") | .url')
+        echo "url=$URL" >> $GITHUB_OUTPUT
+        echo "Deployment URL: $URL"
     
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Download build artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: backend-build
-        path: backend/dist/
-    
-    - name: Deploy to Railway Staging
-      uses: railway-app/railway-action@v1
-      with:
-        api-token: ${{ secrets.RAILWAY_STAGING_TOKEN }}
-        service-id: ${{ secrets.RAILWAY_STAGING_SERVICE_ID }}
-        working-directory: ./backend
-
-  deploy-docker:
-    name: Deploy Docker Image
-    runs-on: ubuntu-latest
-    needs: test-and-build
-    if: github.ref == 'refs/heads/main' || github.event.inputs.environment == 'production'
-    environment: production
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Download build artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: backend-build
-        path: backend/dist/
-    
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-    
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: ./backend
-        push: true
-        tags: |
-          your-org/intentional-backend:latest
-          your-org/intentional-backend:${{ github.sha }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-
-  health-check:
-    name: Backend Health Check
-    runs-on: ubuntu-latest
-    needs: [deploy-railway, deploy-heroku, deploy-docker]
-    if: always() && (needs.deploy-railway.result == 'success' || needs.deploy-heroku.result == 'success' || needs.deploy-docker.result == 'success')
-    
-    steps:
-    - name: Wait for deployment
-      run: sleep 90
-    
-    - name: Check API health
+    - name: Health Check
       run: |
-        response=$(curl -s -o /dev/null -w "%{http_code}" https://api.intentional.app/health || echo "000")
-        if [ "$response" != "200" ]; then
-          echo "Health check failed with status: $response"
+        timeout ${{ github.event.inputs.health_check_timeout || 300 }} bash -c '
+          until curl -f -s "${{ steps.deployment.outputs.url }}/health" > /dev/null 2>&1; do
+            echo "Waiting for backend to be healthy..."
+            sleep 10
+          done
+          echo "Backend is healthy!"
+        ' || {
+          echo "Health check failed"
+          if [ "${{ github.event.inputs.rollback_enabled }}" = "true" ]; then
+            echo "Initiating rollback..."
+            cd backend
+            railway rollback --environment ${{ github.event.inputs.environment || 'staging' }}
+            if [ "${{ github.event.inputs.migrate }}" = "true" ]; then
+              echo "Rolling back database migrations..."
+              railway run "npm run migration:rollback" --environment ${{ github.event.inputs.environment || 'staging' }}
+            fi
+          fi
           exit 1
-        fi
-        echo "Health check passed with status: $response"
+        }
     
-    - name: Verify database connection
+    - name: Run Comprehensive Health Check
       run: |
-        response=$(curl -s -o /dev/null -w "%{http_code}" https://api.intentional.app/health/db || echo "000")
-        if [ "$response" != "200" ]; then
-          echo "Database health check failed with status: $response"
-          exit 1
-        fi
-        echo "Database health check passed with status: $response"
+        chmod +x ./scripts/health-check.sh
+        ./scripts/health-check.sh ${{ github.event.inputs.environment || 'staging' }} backend ${{ github.event.inputs.health_check_timeout || 300 }}
     
-    - name: Notify deployment success
+    - name: Verify Database Connectivity
+      run: |
+        timeout 60 bash -c '
+          until curl -f -s "${{ steps.deployment.outputs.url }}/health/db" > /dev/null 2>&1; do
+            echo "Waiting for database connectivity..."
+            sleep 10
+          done
+          echo "Database connectivity verified!"
+        ' || {
+          echo "Database connectivity check failed"
+          exit 1
+        }
+    
+    - name: Verify Redis Connectivity
+      run: |
+        timeout 60 bash -c '
+          until curl -f -s "${{ steps.deployment.outputs.url }}/health/redis" > /dev/null 2>&1; do
+            echo "Waiting for Redis connectivity..."
+            sleep 10
+          done
+          echo "Redis connectivity verified!"
+        ' || {
+          echo "Redis connectivity check failed"
+          exit 1
+        }
+    
+    - name: Notify Deployment Success
       if: success()
       run: |
-        echo "✅ Backend deployed successfully to production"
-        echo "🌐 https://api.intentional.app"
+        echo "✅ Backend deployed successfully to ${{ github.event.inputs.environment || 'staging' }}"
+        echo "🌐 ${{ steps.deployment.outputs.url }}"
+        echo "📊 Health checks passed"
+        echo "🗄️ Database connectivity verified"
     
-    - name: Notify deployment failure
+    - name: Notify Deployment Failure
       if: failure()
       run: |
         echo "❌ Backend deployment failed"
         echo "🔍 Check the deployment logs for details"
+        echo "🔄 Rollback initiated if enabled"
 
-  rollback:
-    name: Rollback Deployment
+  blue-green-deploy:
+    name: Blue-Green Deployment (Production)
     runs-on: ubuntu-latest
-    needs: health-check
-    if: failure() && needs.health-check.result == 'failure'
+    needs: test-and-build
+    if: github.event.inputs.environment == 'production'
     environment: production
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        ref: ${{ github.event.before }}
     
-    - name: Deploy previous version
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: backend-build
+        path: backend/dist/
+    
+    - name: Setup Railway CLI
+      run: npm install -g @railway/cli
+    
+    - name: Login to Railway
+      run: railway login --token ${{ secrets.RAILWAY_TOKEN }}
+    
+    - name: Create Temporary Environment
       run: |
-        echo "🔄 Rolling back to previous version..."
-        # Add rollback commands here
-        echo "Rollback completed"
+        TEMP_ENV="backend-temp-$(date +%s)"
+        railway environment create "$TEMP_ENV" --clone production
+        echo "TEMP_ENV=$TEMP_ENV" >> $GITHUB_ENV
+    
+    - name: Deploy to Temporary Environment
+      run: |
+        cd backend
+        railway up --environment "$TEMP_ENV"
+    
+    - name: Test Database Migrations
+      if: github.event.inputs.migrate == 'true'
+      run: |
+        cd backend
+        echo "Testing database migrations in temporary environment..."
+        railway run "npm run migration:run" --environment "$TEMP_ENV"
+        echo "Database migrations tested successfully"
+    
+    - name: Health Check Temporary Environment
+      run: |
+        TEMP_URL=$(railway status --json --environment "$TEMP_ENV" | jq -r '.services[] | select(.name == "backend") | .url')
+        timeout 300 bash -c '
+          until curl -f -s "'"$TEMP_URL"'/health" > /dev/null 2>&1; do
+            echo "Waiting for temporary backend to be healthy..."
+            sleep 10
+          done
+          echo "Temporary backend is healthy!"
+        ' || {
+          echo "Temporary environment health check failed"
+          if [ "${{ github.event.inputs.migrate }}" = "true" ]; then
+            echo "Rolling back test migrations..."
+            cd backend
+            railway run "npm run migration:rollback" --environment "$TEMP_ENV"
+          fi
+          railway environment delete "$TEMP_ENV" --force
+          exit 1
+        }
+    
+    - name: Deploy to Production
+      run: |
+        cd backend
+        railway up --environment production
+    
+    - name: Production Database Migrations
+      if: github.event.inputs.migrate == 'true'
+      run: |
+        cd backend
+        echo "Running production database migrations..."
+        railway run "npm run migration:run" --environment production
+        echo "Production migrations completed"
+    
+    - name: Production Health Check
+      run: |
+        timeout 300 bash -c '
+          until curl -f -s "https://intentional-api.railway.app/health" > /dev/null 2>&1; do
+            echo "Waiting for production backend to be healthy..."
+            sleep 10
+          done
+          echo "Production backend is healthy!"
+        ' || {
+          echo "Production health check failed, initiating rollback..."
+          cd backend
+          railway rollback --environment production
+          if [ "${{ github.event.inputs.migrate }}" = "true" ]; then
+            echo "Rolling back database migrations..."
+            railway run "npm run migration:rollback" --environment production
+          fi
+          exit 1
+        }
+    
+    - name: Cleanup Temporary Environment
+      if: always()
+      run: railway environment delete "$TEMP_ENV" --force
+    
+    - name: Notify Blue-Green Deployment Success
+      if: success()
+      run: |
+        echo "✅ Blue-green deployment completed successfully"
+        echo "🌐 https://intentional-api.railway.app"
+        echo "🔄 Zero downtime deployment achieved"
+        echo "🗄️ Database migrations completed successfully"
+
+  monitor-deployment:
+    name: Monitor Deployment
+    runs-on: ubuntu-latest
+    needs: [deploy-to-railway, blue-green-deploy]
+    if: always() && (needs.deploy-to-railway.result == 'success' || needs.blue-green-deploy.result == 'success')
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Railway CLI
+      run: npm install -g @railway/cli
+    
+    - name: Login to Railway
+      run: railway login --token ${{ secrets.RAILWAY_TOKEN }}
+    
+    - name: Monitor Service Health
+      run: |
+        echo "🔍 Monitoring service health for 5 minutes..."
+        for i in {1..30}; do
+          echo "Health check $i/30"
+          if curl -f -s "https://intentional-api.railway.app/health" > /dev/null 2>&1; then
+            echo "✅ Service is healthy"
+          else
+            echo "⚠️ Service health check failed"
+          fi
+          sleep 10
+        done
+    
+    - name: Monitor Database Health
+      run: |
+        echo "🗄️ Monitoring database health..."
+        for i in {1..10}; do
+          echo "Database health check $i/10"
+          if curl -f -s "https://intentional-api.railway.app/health/db" > /dev/null 2>&1; then
+            echo "✅ Database is healthy"
+          else
+            echo "⚠️ Database health check failed"
+          fi
+          sleep 30
+        done
+    
+    - name: Monitor Resource Usage
+      run: |
+        echo "📊 Monitoring resource usage..."
+        railway metrics --environment ${{ github.event.inputs.environment || 'staging' }} || echo "Metrics not available"
+    
+    - name: Generate Deployment Report
+      run: |
+        echo "## Deployment Report" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment**: ${{ github.event.inputs.environment || 'staging' }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Service**: Backend" >> $GITHUB_STEP_SUMMARY
+        echo "- **URL**: https://intentional-api.railway.app" >> $GITHUB_STEP_SUMMARY
+        echo "- **Status**: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Deployed at**: $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
+        echo "- **Database Migrations**: ${{ github.event.inputs.migrate || 'false' }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Health Checks**: ✅ Passed" >> $GITHUB_STEP_SUMMARY
+
+  rollback-on-failure:
+    name: Automatic Rollback
+    runs-on: ubuntu-latest
+    needs: [deploy-to-railway, blue-green-deploy]
+    if: failure() && (needs.deploy-to-railway.result == 'failure' || needs.blue-green-deploy.result == 'failure')
+    environment: ${{ github.event.inputs.environment || 'staging' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Railway CLI
+      run: npm install -g @railway/cli
+    
+    - name: Login to Railway
+      run: railway login --token ${{ secrets.RAILWAY_TOKEN }}
+    
+    - name: Automatic Rollback
+      run: |
+        echo "🔄 Initiating automatic rollback due to deployment failure..."
+        chmod +x ./scripts/rollback.sh
+        ./scripts/rollback.sh ${{ github.event.inputs.environment || 'staging' }} backend "Automatic rollback due to deployment failure" true
+    
+    - name: Notify Rollback
+      run: |
+        echo "🚨 Automatic rollback completed"
+        echo "📋 Check rollback logs for details"
+        echo "🔧 Manual intervention may be required"

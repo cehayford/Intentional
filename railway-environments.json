@@ -1,0 +1,113 @@
+{
+  "environments": {
+    "production": {
+      "id": "production",
+      "name": "Production",
+      "variables": {
+        "NODE_ENV": "production",
+        "DATABASE_URL": "${{RAILWAY_DATABASE_URL}}",
+        "JWT_SECRET": "${{RAILWAY_SECRET_JWT}}",
+        "REDIS_URL": "${{RAILWAY_REDIS_URL}}",
+        "FRONTEND_URL": "https://intentional-app.railway.app",
+        "BACKEND_URL": "https://intentional-api.railway.app",
+        "LOG_LEVEL": "info",
+        "ENABLE_METRICS": "true"
+      },
+      "domains": {
+        "frontend": "intentional-app.railway.app",
+        "backend": "intentional-api.railway.app"
+      },
+      "scaling": {
+        "frontend": {
+          "minInstances": 1,
+          "maxInstances": 10,
+          "targetMemoryPercent": 70,
+          "targetCpuPercent": 80
+        },
+        "backend": {
+          "minInstances": 1,
+          "maxInstances": 20,
+          "targetMemoryPercent": 75,
+          "targetCpuPercent": 70
+        }
+      }
+    },
+    "staging": {
+      "id": "staging",
+      "name": "Staging",
+      "variables": {
+        "NODE_ENV": "staging",
+        "DATABASE_URL": "${{RAILWAY_DATABASE_URL}}",
+        "JWT_SECRET": "${{RAILWAY_SECRET_JWT}}",
+        "REDIS_URL": "${{RAILWAY_REDIS_URL}}",
+        "FRONTEND_URL": "https://intentional-staging.railway.app",
+        "BACKEND_URL": "https://intentional-api-staging.railway.app",
+        "LOG_LEVEL": "debug",
+        "ENABLE_METRICS": "true"
+      },
+      "domains": {
+        "frontend": "intentional-staging.railway.app",
+        "backend": "intentional-api-staging.railway.app"
+      },
+      "scaling": {
+        "frontend": {
+          "minInstances": 1,
+          "maxInstances": 3,
+          "targetMemoryPercent": 80,
+          "targetCpuPercent": 85
+        },
+        "backend": {
+          "minInstances": 1,
+          "maxInstances": 5,
+          "targetMemoryPercent": 80,
+          "targetCpuPercent": 85
+        }
+      }
+    }
+  },
+  "deployment": {
+    "strategy": "blue-green",
+    "healthCheckTimeout": 300,
+    "rollbackOnFailure": true,
+    "zeroDowntime": true,
+    "approvalRequired": {
+      "production": true,
+      "staging": false
+    }
+  },
+  "database": {
+    "type": "postgres",
+    "version": "15",
+    "backup": {
+      "enabled": true,
+      "retention": 30,
+      "schedule": "0 2 * * *"
+    },
+    "migrations": {
+      "autoApply": false,
+      "timeout": 600,
+      "rollbackOnFailure": true
+    }
+  },
+  "monitoring": {
+    "enabled": true,
+    "metrics": {
+      "collection": true,
+      "retention": 7
+    },
+    "alerts": {
+      "errorRate": {
+        "threshold": 5,
+        "window": "5m"
+      },
+      "responseTime": {
+        "threshold": 2000,
+        "window": "5m"
+      },
+      "memoryUsage": {
+        "threshold": 85,
+        "window": "1m"
+      }
+    }
+  }
+}

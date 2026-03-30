@@ -1,0 +1,48 @@
+# Railway Configuration for Backend
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "npm run build && npm run start:prod"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+
+[env]
+NODE_ENV = "production"
+PORT = "3001"
+
+[[services]]
+name = "backend"
+source = "."
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+
+[services.variables]
+DATABASE_URL = "${{RAILWAY_DATABASE_URL}}"
+JWT_SECRET = "${{RAILWAY_SECRET_JWT}}"
+REDIS_URL = "${{RAILWAY_REDIS_URL}}"
+NODE_ENV = "production"
+PORT = "3001"
+
+[[services.ports]]
+port = 3001
+handler = "http"
+
+[scaling]
+minInstances = 1
+maxInstances = 20
+targetMemoryPercent = 75
+targetCpuPercent = 70
+
+[metrics]
+enabled = true
+port = 9101
+path = "/metrics"
+
+[database]
+type = "postgres"
+name = "intentional-db"
+
+[redis]
+name = "intentional-redis"

@@ -1,0 +1,38 @@
+# Railway Configuration for Frontend
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "npm run build && cp -r dist/* /usr/share/nginx/html/"
+healthcheckPath = "/"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+
+[env]
+NODE_ENV = "production"
+PORT = "3000"
+
+[[services]]
+name = "frontend"
+source = "."
+healthcheckPath = "/"
+healthcheckTimeout = 300
+
+[services.variables]
+VITE_API_URL = "${{RAILWAY_PUBLIC_DOMAIN}}"
+NODE_ENV = "production"
+
+[[services.ports]]
+port = 3000
+handler = "http"
+
+[scaling]
+minInstances = 1
+maxInstances = 10
+targetMemoryPercent = 70
+targetCpuPercent = 80
+
+[metrics]
+enabled = true
+port = 9100
+path = "/metrics"
