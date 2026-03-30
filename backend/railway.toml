@@ -3,6 +3,7 @@
 builder = "NIXPACKS"
 buildCommand = "npm run build"
 watchPatterns = ["src/**", "package.json", "tsconfig.json"]
+rootDirectory = "backend"
 
 [deploy]
 startCommand = "npm run start:prod"
@@ -14,6 +15,7 @@ healthcheckCommand = "curl -f http://localhost:3001/health || exit 1"
 [env]
 NODE_ENV = "production"
 PORT = "3001"
+ROOT_DIRECTORY = "backend"
 
 [[services]]
 name = "backend"

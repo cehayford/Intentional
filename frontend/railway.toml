@@ -3,6 +3,7 @@
 builder = "NIXPACKS"
 buildCommand = "npm run build"
 watchPatterns = ["src/**", "package.json", "vite.config.*"]
+rootDirectory = "frontend"
 
 [deploy]
 startCommand = "cp -r dist/* /usr/share/nginx/html/ && nginx -g 'daemon off;'"
@@ -15,6 +16,7 @@ healthcheckCommand = "curl -f http://localhost:3000/health || exit 1"
 NODE_ENV = "production"
 PORT = "3000"
 VITE_API_URL = "${{RAILWAY_PUBLIC_DOMAIN}}"
+ROOT_DIRECTORY = "frontend"
 
 [[services]]
 name = "frontend"

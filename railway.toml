@@ -8,12 +8,14 @@ builder = "NIXPACKS"
 [[services]]
 name = "frontend"
 source = "./frontend"
+rootDirectory = "frontend"
 healthcheckPath = "/"
 healthcheckTimeout = 300
 
 [[services]]
 name = "backend"
 source = "./backend"
+rootDirectory = "backend"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 
@@ -34,3 +36,12 @@ name = "intentional-redis"
 [project]
 name = "intentional"
 type = "monorepo"
+
+# Service-specific configurations
+[services.frontend]
+framework = "vite"
+type = "frontend"
+
+[services.backend]
+framework = "nestjs"
+type = "backend"
