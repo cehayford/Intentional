@@ -5,6 +5,13 @@ buildCommand = "npm run build"
 watchPatterns = ["src/**", "package.json", "tsconfig.json"]
 rootDirectory = "backend"
 
+# Explicitly tell Railway this is a Node.js backend app
+[project]
+type = "backend"
+framework = "nestjs"
+runtime = "node"
+nodeVersion = "18"
+
 [deploy]
 startCommand = "npm run start:prod"
 healthcheckPath = "/health"
@@ -16,6 +23,8 @@ healthcheckCommand = "curl -f http://localhost:3001/health || exit 1"
 NODE_ENV = "production"
 PORT = "3001"
 ROOT_DIRECTORY = "backend"
+NIXPACKS_BUILD_COMMAND = "npm run build"
+NIXPACKS_START_COMMAND = "npm run start:prod"
 
 [[services]]
 name = "backend"

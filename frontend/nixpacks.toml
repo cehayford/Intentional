@@ -1,0 +1,15 @@
+# Nixpacks configuration for Frontend
+[phases.setup]
+nixPkgs = ["nodejs-18_x", "nginx"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[phases.install]
+cmds = ["npm ci"]
+
+[start]
+cmd = "cp -r dist/* /usr/share/nginx/html/ && nginx -g 'daemon off;'"
+
+[variables]
+NODE_ENV = "production"

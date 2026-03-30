@@ -5,6 +5,13 @@ buildCommand = "npm run build"
 watchPatterns = ["src/**", "package.json", "vite.config.*"]
 rootDirectory = "frontend"
 
+# Explicitly tell Railway this is a Node.js frontend app
+[project]
+type = "frontend"
+framework = "vite"
+runtime = "node"
+nodeVersion = "18"
+
 [deploy]
 startCommand = "cp -r dist/* /usr/share/nginx/html/ && nginx -g 'daemon off;'"
 healthcheckPath = "/"
@@ -17,6 +24,8 @@ NODE_ENV = "production"
 PORT = "3000"
 VITE_API_URL = "${{RAILWAY_PUBLIC_DOMAIN}}"
 ROOT_DIRECTORY = "frontend"
+NIXPACKS_BUILD_COMMAND = "npm run build"
+NIXPACKS_START_COMMAND = "cp -r dist/* /usr/share/nginx/html/ && nginx -g 'daemon off;'"
 
 [[services]]
 name = "frontend"

@@ -5,10 +5,14 @@
     "start": "node dist/main",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main",
     "build": "nest build",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage"
+    "test:cov": "jest --coverage",
+    "migration:run": "npm run build && npx typeorm migration:run -d dist/database.config.js",
+    "migration:rollback": "npm run build && npx typeorm migration:revert -d dist/database.config.js",
+    "migration:show": "npm run build && npx typeorm migration:show -d dist/database.config.js"
   },
   "dependencies": {
     "@nestjs/common": "^10.3.2",
