@@ -18,17 +18,27 @@ import { HealthModule }   from './health/health.module'
     // PostgreSQL via TypeORM
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (cfg: ConfigService) => ({
-        type:        'postgres',
-        host:        cfg.get('DB_HOST',     'localhost'),
-        port:        cfg.get<number>('DB_PORT', 5432),
-        username:    cfg.get('DB_USER',     'postgres'),
-        password:    cfg.get('DB_PASSWORD', 'postgres'),
-        database:    cfg.get('DB_NAME',     'spending_tracker'),
-        autoLoadEntities: true,
-        synchronize: true, // Auto-create tables in dev
-        logging:     cfg.get('NODE_ENV') === 'development',
-      }),
+      useFactory: (cfg: ConfigService) => {
+        const databaseUrl = cfg.get<string>('DATABASE_URL')
+        const options: Record<string, unknown> = {
+          type: 'postgres',
+          autoLoadEntities: true,
+          synchronize: true, // Auto-create tables in dev
+          logging: cfg.get('NODE_ENV') === 'development',
+        }
+
+        if (databaseUrl) {
+          options.url = databaseUrl
+        } else {
+          options.host = cfg.get<string>('DB_HOST', 'localhost')
+          options.port = cfg.get<number>('DB_PORT', 5432)
+          options.username = cfg.get<string>('DB_USER', 'postgres')
+          options.password = cfg.get<string>('DB_PASSWORD', 'postgres')
+          options.database = cfg.get<string>('DB_NAME', 'spending_tracker')
+        }
+
+        return options
+      },
     }),
 
     // Rate limiting: 100 req/min per user (PRD §9.1)

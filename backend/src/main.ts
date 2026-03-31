@@ -15,11 +15,15 @@ async function bootstrap() {
     transformOptions: { enableImplicitConversion: true },
   }))
 
-  // CORS for dev
-  app.enableCors({ origin: 'http://localhost:3000', credentials: true })
+  const frontendOrigins = (process.env.FRONTEND_URL || 'http://localhost:3000')
+    .split(',')
+    .map(origin => origin.trim())
+    .filter(Boolean)
+
+  app.enableCors({ origin: frontendOrigins, credentials: true })
 
   // API prefix (but exclude health endpoint)
-  app.setGlobalPrefix('api/v1', { exclude: ['/health'] })
+  app.setGlobalPrefix('api/v1', { exclude: ['health'] })
 
   // Swagger / OpenAPI
   const config = new DocumentBuilder()
@@ -31,9 +35,9 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, SwaggerModule.createDocument(app, config))
 
   // Get port from environment or use 3001 for Railway
-  const port = process.env.PORT || 3001
-  
-  await app.listen(port)
+  const port = Number(process.env.PORT || 3001)
+
+  await app.listen(port, '0.0.0.0')
   console.log(`🚀 API running at http://localhost:${port}/api/v1`)
   console.log(`📚 Docs at http://localhost:${port}/api/docs`)
 }
