@@ -1,7 +1,7 @@
 # Railway Configuration for Backend
 [build]
-builder = "RAILPACK"
-buildCommand = "npm run build"
+builder = "DOCKERFILE"
+dockerfilePath = "./Dockerfile"
 watchPatterns = ["src/**", "package.json", "tsconfig.json"]
 rootDirectory = "backend"
 

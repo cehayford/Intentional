@@ -8,6 +8,7 @@ import { BudgetsModule }  from './modules/budgets/budgets.module'
 import { IncomeModule }   from './modules/income/income.module'
 import { ExpensesModule } from './modules/expenses/expenses.module'
 import { AnalyticsModule }from './modules/analytics/analytics.module'
+import { HealthModule }   from './health/health.module'
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { AnalyticsModule }from './modules/analytics/analytics.module'
     IncomeModule,
     ExpensesModule,
     AnalyticsModule,
+    HealthModule,
   ],
 })
 export class AppModule {}
