@@ -36,17 +36,17 @@ WORKDIR /app
 # Copy built assets from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy package.json
-COPY package.json ./package.json
+# # Copy package.json
+# COPY package.json ./package.json
 
 # Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-# Test nginx configuration
-RUN nginx -t
+# # Test nginx configuration
+# RUN nginx -t
 
 # Expose port 80 (standard HTTP port)
 EXPOSE 80
 
 # Start nginx
-CMD ["/bin/sh", "-c", "envsubst '$$PORT' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+CMD ["/bin/sh", "-c", "envsubst '$$PORT' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"]
