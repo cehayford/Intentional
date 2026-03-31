@@ -6,7 +6,7 @@ watchPatterns = ["src/**", "package.json", "vite.config.*"]
 rootDirectory = "frontend"
 
 [deploy]
-startCommand = "nginx -g 'daemon off;'"
+startCommand = "npm run start:prod"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
