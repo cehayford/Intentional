@@ -52,7 +52,3 @@ enabled = true
 port = 9100
 path = "/metrics"
 
-# Explicitly tell Railway this is a Node.js frontend project
-[project]
-type = "frontend"
-framework = "vite"
