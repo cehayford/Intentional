@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "vite --port 3000",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "nginx -g 'daemon off;'",
+    "start:prod": "nginx -g 'daemon off;'"
   },
   "dependencies": {
     "@react-three/drei": "^9.105.0",

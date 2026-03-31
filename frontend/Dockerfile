@@ -18,8 +18,10 @@ RUN npm run build
 # Production stage optimized for Railway
 FROM nginx:alpine AS production
 
-# Install curl for health checks
-RUN apk add --no-cache curl
+# Install curl for health checks and npm fallback for Railway run commands
+RUN apk add --no-cache curl nodejs npm
+
+WORKDIR /app
 
 # Default port for local runs; Railway overrides this at runtime.
 ENV PORT=3000
@@ -27,8 +29,11 @@ ENV PORT=3000
 # Copy built assets from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy nginx template (expanded by nginx entrypoint with env vars)
-COPY nginx.conf /etc/nginx/templates/default.conf.template
+# Copy package.json so `npm start` works if platform command overrides CMD
+COPY package.json ./package.json
+
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port
 EXPOSE 3000

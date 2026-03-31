@@ -5,14 +5,8 @@ dockerfilePath = "./Dockerfile"
 watchPatterns = ["src/**", "package.json", "vite.config.*"]
 rootDirectory = "frontend"
 
-# Explicitly tell Railway this is a Node.js frontend app
-[project]
-type = "frontend"
-framework = "vite"
-runtime = "node"
-nodeVersion = "20"
-
 [deploy]
+startCommand = "nginx -g 'daemon off;'"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
