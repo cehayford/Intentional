@@ -16,6 +16,10 @@ NODE_ENV = "production"
 PORT = "3000"
 VITE_API_URL = "${{RAILWAY_PUBLIC_DOMAIN}}"
 ROOT_DIRECTORY = "frontend"
+REACT_APP_API_URL = "https://spendi.up.railway.app/"
+REACT_APP_ENABLE_ANALYTICS = "false"
+REACT_APP_ENABLE_DEBUG = "true"
+REACT_APP_ENV = "production"
 
 [[services]]
 name = "frontend"
@@ -26,6 +30,10 @@ healthcheckTimeout = 60
 [services.variables]
 VITE_API_URL = "${{RAILWAY_PUBLIC_DOMAIN}}"
 NODE_ENV = "production"
+REACT_APP_API_URL = "https://spendi.up.railway.app/"
+REACT_APP_ENABLE_ANALYTICS = "false"
+REACT_APP_ENABLE_DEBUG = "true"
+REACT_APP_ENV = "production"
 
 [[services.ports]]
 port = 3000
