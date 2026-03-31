@@ -14,10 +14,10 @@ nodeVersion = "20"
 
 [deploy]
 startCommand = "nginx -g 'daemon off;'"
-healthcheckPath = "/"
+healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
-healthcheckCommand = "curl -f http://localhost:3000/health || exit 1"
+healthcheckCommand = "curl -f http://localhost:$PORT/health || exit 1"
 
 [env]
 NODE_ENV = "production"
@@ -30,7 +30,7 @@ NIXPACKS_START_COMMAND = "cp -r dist/* /usr/share/nginx/html/ && nginx -g 'daemo
 [[services]]
 name = "frontend"
 source = "."
-healthcheckPath = "/"
+healthcheckPath = "/health"
 healthcheckTimeout = 300
 
 [services.variables]
