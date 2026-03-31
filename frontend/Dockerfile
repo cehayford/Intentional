@@ -25,31 +25,28 @@ ENV REACT_APP_ENV=${REACT_APP_ENV}
 
 RUN npm run build
 
-# Production stage optimized for Railway
+# Production stage
 FROM nginx:alpine AS production
 
-# Install curl for health checks and npm fallback for Railway run commands
+# Install curl for health checks
 RUN apk add --no-cache curl nodejs npm
 
 WORKDIR /app
 
-# Default port for local runs; Railway overrides this at runtime.
-ENV PORT=3000
-
 # Copy built assets from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy package.json so `npm start` works if platform command overrides CMD
+# Copy package.json
 COPY package.json ./package.json
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Test nginx configuration and start
+# Test nginx configuration
 RUN nginx -t
 
-# Expose port
-EXPOSE 3000
+# Expose port 80 (standard HTTP port)
+EXPOSE 80
 
-# Start nginx immediately - no Docker health check
+# Start nginx
 CMD ["nginx", "-g", "daemon off;"]
