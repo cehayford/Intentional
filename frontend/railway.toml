@@ -13,7 +13,6 @@ runtime = "node"
 nodeVersion = "20"
 
 [deploy]
-startCommand = "nginx -g 'daemon off;'"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
@@ -24,8 +23,6 @@ NODE_ENV = "production"
 PORT = "3000"
 VITE_API_URL = "${{RAILWAY_PUBLIC_DOMAIN}}"
 ROOT_DIRECTORY = "frontend"
-NIXPACKS_BUILD_COMMAND = "npm run build"
-NIXPACKS_START_COMMAND = "cp -r dist/* /usr/share/nginx/html/ && nginx -g 'daemon off;'"
 
 [[services]]
 name = "frontend"
