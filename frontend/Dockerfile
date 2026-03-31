@@ -38,5 +38,5 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Expose port
 EXPOSE 3000
 
-# Start nginx
+# Start nginx immediately - no Docker health check
 CMD ["nginx", "-g", "daemon off;"]

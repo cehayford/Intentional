@@ -33,9 +33,6 @@ RUN npm ci --only=production && npm cache clean --force
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
 
-# # Copy health check script
-# COPY healthcheck.js ./
-
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nodejs -u 1001
@@ -47,10 +44,6 @@ USER nodejs
 # Expose port
 EXPOSE 3001
 
-# # Health check
-# HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-#   CMD node healthcheck.js
-
-# Start the application
+# Start application immediately - no Docker health check
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "dist/main"]

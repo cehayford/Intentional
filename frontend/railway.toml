@@ -6,11 +6,10 @@ watchPatterns = ["src/**", "package.json", "vite.config.*"]
 rootDirectory = "frontend"
 
 [deploy]
-startCommand = "npm run start:prod"
+startCommand = "nginx -g 'daemon off;'"
 healthcheckPath = "/health"
-healthcheckTimeout = 300
+healthcheckTimeout = 60
 restartPolicyType = "ON_FAILURE"
-healthcheckCommand = "curl -f http://localhost:$PORT/health || exit 1"
 
 [env]
 NODE_ENV = "production"
@@ -22,7 +21,7 @@ ROOT_DIRECTORY = "frontend"
 name = "frontend"
 source = "."
 healthcheckPath = "/health"
-healthcheckTimeout = 300
+healthcheckTimeout = 60
 
 [services.variables]
 VITE_API_URL = "${{RAILWAY_PUBLIC_DOMAIN}}"

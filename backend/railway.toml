@@ -13,11 +13,10 @@ runtime = "node"
 nodeVersion = "18"
 
 [deploy]
-startCommand = "npm run start:prod"
+startCommand = "node dist/main"
 healthcheckPath = "/health"
-healthcheckTimeout = 300
+healthcheckTimeout = 60
 restartPolicyType = "ON_FAILURE"
-healthcheckCommand = "curl -f http://localhost:3001/health || exit 1"
 
 [env]
 NODE_ENV = "production"
@@ -28,7 +27,7 @@ ROOT_DIRECTORY = "backend"
 name = "backend"
 source = "."
 healthcheckPath = "/health"
-healthcheckTimeout = 300
+healthcheckTimeout = 60
 
 [services.variables]
 DATABASE_URL = "${{RAILWAY_DATABASE_URL}}"
