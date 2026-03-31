@@ -7,6 +7,19 @@ import { AppModule } from './app.module'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
+  // Keep root path healthy for basic platform probes and manual checks.
+  const httpAdapter = app.getHttpAdapter()
+  const instance = httpAdapter.getInstance()
+  instance.get('/', (_req, res) => {
+    res.status(200).json({
+      status: 'ok',
+      service: 'intentional-backend',
+      health: '/health',
+      apiBase: '/api/v1',
+      docs: '/api/docs',
+    })
+  })
+
   // Global validation pipe
   app.useGlobalPipes(new ValidationPipe({
     whitelist:   true,
