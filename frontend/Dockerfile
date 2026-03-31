@@ -28,25 +28,16 @@ RUN npm run build
 # Production stage
 FROM nginx:alpine AS production
 
-# Install curl for health checks
-RUN apk add --no-cache curl nodejs npm
+# Install gettext for envsubst
+RUN apk add --no-cache gettext
 
 WORKDIR /app
 
 # Copy built assets from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# # Copy package.json
-# COPY package.json ./package.json
-
-# Copy nginx configuration
+# Copy nginx configuration as template
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-# # Test nginx configuration
-# RUN nginx -t
-
-# Expose port 80 (standard HTTP port)
-EXPOSE 80
-
-# Start nginx
+# Start script that substitutes PORT and starts nginx
 CMD ["/bin/sh", "-c", "envsubst '$$PORT' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"]
