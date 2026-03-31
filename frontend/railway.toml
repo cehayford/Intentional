@@ -10,10 +10,10 @@ rootDirectory = "frontend"
 type = "frontend"
 framework = "vite"
 runtime = "node"
-nodeVersion = "18"
+nodeVersion = "20"
 
 [deploy]
-startCommand = "cp -r dist/* /usr/share/nginx/html/ && nginx -g 'daemon off;'"
+startCommand = "nginx -g 'daemon off;'"
 healthcheckPath = "/"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
