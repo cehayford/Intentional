@@ -33,7 +33,17 @@ async function bootstrap() {
     .map(origin => origin.trim())
     .filter(Boolean)
 
-  app.enableCors({ origin: frontendOrigins, credentials: true })
+  // Add localhost for development
+  frontendOrigins.push('http://localhost:3000', 'http://localhost:3001')
+
+  console.log('🔓 CORS origins:', frontendOrigins)
+
+  app.enableCors({ 
+    origin: frontendOrigins, 
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  })
 
   // API prefix (but exclude health endpoint)
   app.setGlobalPrefix('api/v1', { exclude: ['health'] })

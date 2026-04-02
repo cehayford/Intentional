@@ -25,7 +25,7 @@ ROOT_DIRECTORY = "backend"
 DATABASE_URL = "${{RAILWAY_DATABASE_URL}}"
 JWT_SECRET = "${{RAILWAY_SECRET_JWT}}"
 REDIS_URL = "${{RAILWAY_REDIS_URL}}"
-FRONTEND_URL = "https://intentional-fr-production.up.railway.app"
+FRONTEND_URL = "https://intentional-fr.up.railway.app"
 
 [[services]]
 name = "backend"
