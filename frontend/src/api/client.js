@@ -1,8 +1,24 @@
 import axios from 'axios'
 
 // ─── Axios Instance ─────────────────────────────────────────
+// Dynamic baseURL with fallbacks
+const getBaseURL = () => {
+  // 1. Use environment variable if set
+  if (process.env.REACT_APP_API_URL) {
+    return `${process.env.REACT_APP_API_URL}/api/v1`
+  }
+  
+  // 2. Use production URL if in production
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://intentional-bknd.up.railway.app/api/v1'
+  }
+  
+  // 3. Default to local development
+  return 'http://localhost:3001/api/v1'
+}
+
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL ? `${process.env.REACT_APP_API_URL}/api/v1` : '/api/v1',
+  baseURL: getBaseURL(),
   timeout: 10000,
   headers: { 'Content-Type': 'application/json' },
 })
@@ -55,8 +71,7 @@ api.interceptors.response.use(
       }
 
       try {
-        const baseURL = process.env.REACT_APP_API_URL ? `${process.env.REACT_APP_API_URL}/api/v1` : '/api/v1'
-        const { data } = await axios.post(`${baseURL}/auth/refresh`, { refreshToken })
+        const { data } = await axios.post(`${getBaseURL()}/auth/refresh`, { refreshToken })
         localStorage.setItem('accessToken',  data.accessToken)
         localStorage.setItem('refreshToken', data.refreshToken)
         api.defaults.headers.common.Authorization = `Bearer ${data.accessToken}`
