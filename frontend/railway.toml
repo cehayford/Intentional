@@ -1,6 +1,6 @@
 [build]
 builder = "DOCKERFILE"
-dockerfilePath = "./Dockerfile.prod"
+dockerfilePath = "./Dockerfile"
 watchPatterns = ["src/**", "package.json", "vite.config.*"]
 rootDirectory = "frontend"
 
@@ -8,6 +8,7 @@ rootDirectory = "frontend"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
+port = 80
 
 [env]
 NODE_ENV = "production"

@@ -17,5 +17,5 @@ COPY . .
 # Expose port
 EXPOSE 3000
 
-# Start development server
+# Start development server with proper host binding
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
