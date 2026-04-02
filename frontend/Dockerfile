@@ -11,8 +11,8 @@ RUN npm run build
 # Install http-server globally to serve static files
 RUN npm install -g http-server
 
-# Expose port 3000
-EXPOSE 3000
+# Expose port
+EXPOSE $PORT
 
-# Serve the /dist directory on port 3000
-CMD ["http-server", "dist", "-p", "3000", "--cors"]
+# Serve the /dist directory on the PORT provided by Railway
+CMD ["sh", "-c", "npx http-server dist -p $PORT --cors"]
