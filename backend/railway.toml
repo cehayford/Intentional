@@ -39,6 +39,7 @@ JWT_SECRET = "${{RAILWAY_SECRET_JWT}}"
 REDIS_URL = "${{RAILWAY_REDIS_URL}}"
 NODE_ENV = "production"
 PORT = "3001"
+FRONTEND_URL = "https://intentional-fr.up.railway.app"
 
 [[services.ports]]
 port = 3001
