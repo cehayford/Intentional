@@ -14,7 +14,7 @@ const getBaseURL = () => {
   }
   
   // 3. Default to local development
-  return 'http://localhost:3001/api/v1'
+  return 'https://intentional-bknd.up.railway.app/api/v1'
 }
 
 const api = axios.create({
