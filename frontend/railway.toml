@@ -4,12 +4,6 @@ dockerfilePath = "./Dockerfile"
 watchPatterns = ["src/**", "package.json", "vite.config.*"]
 rootDirectory = "frontend"
 
-[deploy]
-healthcheckPath = "/"
-healthcheckTimeout = 300
-restartPolicyType = "ON_FAILURE"
-port = 3000
-
 [env]
 NODE_ENV = "production"
 REACT_APP_API_URL = "https://intentional-bknd.up.railway.app"
