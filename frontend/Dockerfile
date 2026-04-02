@@ -14,11 +14,14 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Install serve for static file serving
-RUN npm install -g serve
+# Install serve locally (not globally)
+RUN npm install serve
 
 # Expose port 3000
 EXPOSE 3000
 
-# Serve the built application
-CMD ["serve", "-s", "dist", "-l", "3000"]
+# Change to dist directory and serve from there
+WORKDIR /app/dist
+
+# Serve the built application using local serve
+CMD ["node", "../node_modules/.bin/serve", "-s", ".", "-l", "3000"]
