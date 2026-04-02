@@ -14,5 +14,11 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Railway will automatically serve the /dist directory
-# No server needed - Railway handles static hosting
+# Install serve for static file serving
+RUN npm install -g serve
+
+# Expose port 3000
+EXPOSE 3000
+
+# Serve the built application
+CMD ["serve", "-s", "dist", "-l", "3000"]
