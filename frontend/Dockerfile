@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -14,29 +14,5 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Production stage - use nginx for reliable static serving
-FROM nginx:alpine AS production
-
-# Copy built assets from builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Create simple nginx config for client-side routing
-RUN echo 'server { \
-    listen 3000; \
-    server_name _; \
-    root /usr/share/nginx/html; \
-    index index.html; \
-    location / { \
-        try_files $uri $uri/ /index.html; \
-    } \
-    location /health { \
-        return 200 "healthy\n"; \
-        add_header Content-Type text/plain; \
-    } \
-}' > /etc/nginx/conf.d/default.conf
-
-# Expose port 3000 (Railway's default)
-EXPOSE 3000
-
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Railway will automatically serve the /dist directory
+# No server needed - Railway handles static hosting

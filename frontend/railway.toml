@@ -1,14 +1,10 @@
 [build]
-builder = "DOCKERFILE"
-dockerfilePath = "./Dockerfile"
+builder = "NIXPACKS"
 watchPatterns = ["src/**", "package.json", "vite.config.*"]
 rootDirectory = "frontend"
 
-[deploy]
-healthcheckPath = "/health"
-healthcheckTimeout = 300
-restartPolicyType = "ON_FAILURE"
-port = 3000
+# Railway automatically serves static files from /dist
+# No healthcheck, no port configuration needed
 
 [env]
 NODE_ENV = "production"
