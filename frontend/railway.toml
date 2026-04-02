@@ -1,9 +1,14 @@
 [build]
 builder = "DOCKERFILE"
-dockerfilePath = "./Dockerfile"
+dockerfilePath = "./Dockerfile.prod"
 watchPatterns = ["src/**", "package.json", "vite.config.*"]
 rootDirectory = "frontend"
 
 [deploy]
-# Railway will automatically serve static files from /dist
-# No start command needed for static sites
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+
+[env]
+NODE_ENV = "production"
+REACT_APP_API_URL = "https://intentional-bknd.up.railway.app"
