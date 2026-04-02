@@ -1,4 +1,3 @@
-# Railway Configuration for Frontend
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "./Dockerfile"
@@ -6,47 +5,5 @@ watchPatterns = ["src/**", "package.json", "vite.config.*"]
 rootDirectory = "frontend"
 
 [deploy]
-startCommand = "nginx -g 'daemon off;'"
-healthcheckPath = "/health"
-healthcheckTimeout = 60
-restartPolicyType = "ON_FAILURE"
-
-[env]
-NODE_ENV = "production"
-PORT = "3000"
-VITE_API_URL = "${{RAILWAY_PUBLIC_DOMAIN}}"
-ROOT_DIRECTORY = "frontend"
-REACT_APP_API_URL = "https://spendi.up.railway.app/"
-REACT_APP_ENABLE_ANALYTICS = "false"
-REACT_APP_ENABLE_DEBUG = "true"
-REACT_APP_ENV = "production"
-
-[[services]]
-name = "frontend"
-source = "."
-healthcheckPath = "/health"
-healthcheckTimeout = 60
-
-[services.variables]
-VITE_API_URL = "${{RAILWAY_PUBLIC_DOMAIN}}"
-NODE_ENV = "production"
-REACT_APP_API_URL = "https://spendi.up.railway.app/"
-REACT_APP_ENABLE_ANALYTICS = "false"
-REACT_APP_ENABLE_DEBUG = "true"
-REACT_APP_ENV = "production"
-
-[[services.ports]]
-port = 3000
-handler = "http"
-
-[scaling]
-minInstances = 1
-maxInstances = 10
-targetMemoryPercent = 70
-targetCpuPercent = 80
-
-[metrics]
-enabled = true
-port = 9100
-path = "/metrics"
-
+# Railway will automatically serve static files from /dist
+# No start command needed for static sites
