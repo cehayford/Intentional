@@ -1,20 +1,21 @@
 import React, { useState } from 'react'
 
 const VIDEOS = [
-  { id: '1', videoId: 'ryvKTI2v_-0', title: 'ACCOUNTANT EXPLAINS: How I manage my money on payday' },
-  { id: '2', videoId: 'Q0uXGQu55GM', title: 'ACCOUNTANT EXPLAINS: Money Habits keeping you poor' },
-  { id: '3', videoId: 's5U4gJ6S9Cg', title: 'ACCOUNTANT EXPLAINS: How to change your finances in 6 months' },
-  { id: '4', videoId: 'm4vP-d8_wBw', title: 'ACCOUNTANT EXPLAINS: Why everything changes after $20K' },
-  { id: '5', videoId: 'R234w1sR8_A', title: 'Should You Pay Off Debt Early or Invest?' },
-  { id: '6', videoId: 'i5VZcgBsFcs', title: 'ACCOUNTANT EXPLAINS: 5 Money Rules to building wealth' },
-  { id: '7', videoId: 'sVKQn2I44eg', title: '7 Things To Do NOW If You Want To Be Rich' },
-  { id: '8', videoId: 'Jj8wEunx-oE', title: 'ACCOUNTANT EXPLAINS: 9 Subconscious spending habits' },
+  { id: '1', videoId: 'H3UzN1B2xJk', title: 'How I Manage My Money | Budgeting Tips' },
+  { id: '2', videoId: 'a9hDjrYpJ8U', title: 'Money Habits Keeping You Poor' },
+  { id: '3', videoId: 'kZcVf-0B4pE', title: 'How to Change Your Finances in 6 Months' },
+  { id: '4', videoId: '7X3Y4Z5W6VQ', title: 'Why Everything Changes After $20K' },
+  { id: '5', videoId: '9L8M7N6O5P4', title: 'Pay Off Debt Early or Invest?' },
+  { id: '6', videoId: '3R2T1Y0U9I8', title: '5 Money Rules to Building Wealth' },
+  { id: '7', videoId: '8K7J6H5G4F3', title: 'Things to Do Now If You Want to Be Rich' },
+  { id: '8', videoId: '2Q1W0E9R8T7', title: 'Subconscious Spending Habits' },
 ]
 
 function VideoCard({ video }) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [imageError, setImageError] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
+  const [videoError, setVideoError] = useState(false)
   const thumbUrl = `https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg`
   const fallbackUrl = `https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`
 
@@ -27,6 +28,18 @@ function VideoCard({ video }) {
 
   const handleImageLoad = () => {
     setImageLoaded(true)
+  }
+
+  const handleVideoError = () => {
+    setVideoError(true)
+    setIsPlaying(false)
+  }
+
+  const handlePlayClick = () => {
+    if (!isPlaying && !videoError) {
+      setIsPlaying(true)
+      setVideoError(false)
+    }
   }
 
   return (
@@ -44,7 +57,7 @@ function VideoCard({ video }) {
           background: 'var(--color-black-800)',
           cursor: isPlaying ? 'default' : 'pointer'
         }}
-        onClick={() => !isPlaying && setIsPlaying(true)}
+        onClick={handlePlayClick}
       >
         {!isPlaying ? (
           <>
@@ -101,15 +114,37 @@ function VideoCard({ video }) {
             </div>
           </>
         ) : (
-          <iframe
-            title={video.title}
-            src={`https://www.youtube.com/embed/${video.videoId}?autoplay=1`}
-            style={{
-              position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0
-            }}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
+          <>
+            {videoError && (
+              <div 
+                style={{
+                  position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                  background: 'linear-gradient(135deg, var(--color-black-800), var(--color-black-600))',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: 'var(--color-mid-grey)', fontSize: 'var(--text-sm)', textAlign: 'center',
+                  padding: 'var(--space-4)', zIndex: 3
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: 'var(--text-2xl)', marginBottom: 'var(--space-2)' }}>⚠️</div>
+                  <div>Video Unavailable</div>
+                  <div style={{ fontSize: 'var(--text-xs)', marginTop: 'var(--space-1)' }}>Click to retry</div>
+                </div>
+              </div>
+            )}
+            
+            <iframe
+              title={video.title}
+              src={`https://www.youtube.com/embed/${video.videoId}?autoplay=1`}
+              onError={handleVideoError}
+              style={{
+                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0,
+                display: videoError ? 'none' : 'block'
+              }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </>
         )}
       </div>
     </div>
