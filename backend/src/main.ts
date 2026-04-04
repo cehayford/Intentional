@@ -54,8 +54,12 @@ async function bootstrap() {
     .setDescription('50/30/20 budget management REST API')
     .setVersion('1.0')
     .addBearerAuth()
+    .addServer('/api/v1', 'Production API')
+    .addServer('http://localhost:3001/api/v1', 'Development API')
     .build()
-  SwaggerModule.setup('api/docs', app, SwaggerModule.createDocument(app, config))
+  
+  const document = SwaggerModule.createDocument(app, config)
+  SwaggerModule.setup('api/docs', app, document)
 
   // Get port from environment or use 3001 for Railway
   const port = Number(process.env.PORT || 3001)
