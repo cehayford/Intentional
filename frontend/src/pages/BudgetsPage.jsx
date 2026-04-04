@@ -91,38 +91,86 @@ export default function BudgetsPage() {
         <button className="btn btn-primary" onClick={() => setShowCreate(true)}>+ New Budget</button>
       </div>
 
-      <div style={{ display:'grid', gridTemplateColumns:'280px 1fr', gap:'var(--space-6)' }}>
-        {/* Budget List */}
-        <div style={{ display:'flex', flexDirection:'column', gap:'var(--space-3)' }}>
-          <p className="text-xs text-grey" style={{ textTransform:'uppercase', letterSpacing:'0.08em', fontWeight:600, padding:'0 var(--space-2)' }}>Your Budgets</p>
-          {budgets.length === 0 && (
-            <div className="empty-state" style={{ padding:'var(--space-8) var(--space-4)' }}>
-              <div className="empty-state-icon">📅</div>
-              <p className="text-sm text-grey">No budgets yet</p>
-            </div>
-          )}
-          {budgets.map(b => (
-            <div
-              key={b.id}
-              className={`card card-p ${selected?.id === b.id ? 'animate-glow' : ''}`}
-              style={{
-                cursor:'pointer',
-                border: selected?.id === b.id ? '1px solid rgba(255,243,19,0.4)' : '1px solid var(--color-glass-border)',
-                background: selected?.id === b.id ? 'var(--color-yellow-glow)' : 'var(--color-glass-white)',
-              }}
-              onClick={() => setSelected(b)}
-            >
-              <div className="flex justify-between items-center">
-                <div>
-                  <div style={{ fontWeight:600, fontSize:'var(--text-base)' }}>
-                    {new Date(b.month).toLocaleString('default', { month:'long', year:'numeric' })}
-                  </div>
-                  <div className="text-sm text-grey">{fmt(b.totalIncome)} income</div>
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'clamp(280px, 30vw, 320px) 1fr',
+        gap: 'clamp(1rem, 3vw, 1.5rem)',
+        alignItems: 'start'
+      }}>
+        {/* Left Panel - Budget List */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'clamp(0.75rem, 2vw, 1rem)'
+        }}>
+          <div className="flex justify-between items-center" style={{
+            marginBottom: 'clamp(0.5rem, 1.5vw, 1rem)',
+            flexDirection: window.innerWidth < 480 ? 'column' : 'row',
+            alignItems: window.innerWidth < 480 ? 'flex-start' : 'center',
+            gap: 'clamp(0.5rem, 1vw, 0.75rem)'
+          }}>
+            <h2 className="text-lg font-semi" style={{
+              fontSize: 'clamp(1.125rem, 3vw, 1.5rem)'
+            }}>Monthly Budgets</h2>
+            <button className="btn btn-primary btn-sm" onClick={() => setShowCreate(true)} style={{
+              padding: 'clamp(0.5rem, 1.5vw, 0.75rem) clamp(1rem, 2vw, 1.5rem)',
+              fontSize: 'clamp(0.75rem, 2vw, 0.875rem)'
+            }}>
+              + Create
+            </button>
+          </div>
+          
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'clamp(0.5rem, 1.5vw, 0.75rem)',
+            maxHeight: 'clamp(300px, 50vh, 400px)',
+            overflowY: 'auto',
+            padding: 'clamp(0.5rem, 1vw, 0.75rem)',
+            background: 'var(--color-black-800)',
+            borderRadius: 'clamp(8px, 1.5vw, 12px)'
+          }}>
+            {budgets.map(b => (
+              <div
+                key={b.id}
+                onClick={() => setSelected(b)}
+                className={`budget-item ${selected?.id === b.id ? 'active' : ''}`}
+                style={{
+                  padding: 'clamp(0.75rem, 2vw, 1rem)',
+                  borderRadius: 'clamp(6px, 1vw, 8px)',
+                  cursor: 'pointer',
+                  background: selected?.id === b.id ? 'var(--color-yellow-glow)' : 'var(--color-black-700)',
+                  border: selected?.id === b.id ? '1px solid var(--color-yellow)' : '1px solid transparent',
+                  transition: 'all var(--transition-base) ease'
+                }}
+              >
+                <div style={{
+                  fontSize: 'clamp(0.875rem, 2vw, 1rem)',
+                  fontWeight: selected?.id === b.id ? '600' : '400',
+                  color: selected?.id === b.id ? 'var(--color-yellow)' : 'var(--color-off-white)'
+                }}>
+                  {new Date(b.month).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                 </div>
-                {b.isActive && <span className="badge" style={{ background:'var(--color-yellow-glow)', color:'var(--color-yellow)', border:'1px solid rgba(255,243,19,0.3)' }}>Active</span>}
+                <div style={{
+                  fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
+                  color: 'var(--color-mid-grey)',
+                  marginTop: 'clamp(0.25rem, 0.5vw, 0.5rem)'
+                }}>
+                  Income: {fmt(b.totalIncome)}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+            {budgets.length === 0 && (
+              <div style={{
+                textAlign: 'center',
+                padding: 'clamp(1.5rem, 4vw, 2rem)',
+                color: 'var(--color-mid-grey)',
+                fontSize: 'clamp(0.875rem, 2vw, 1rem)'
+              }}>
+                No budgets yet
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Budget Detail */}

@@ -91,15 +91,36 @@ export default function AnalyticsPage() {
   ] : []
 
   return (
-    <div className="analytics-page">
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">Budget Analytics</h1>
-          <p className="page-subtitle">Track your spending and savings</p>
+    <div className="analytics-page" style={{
+      padding: 'clamp(1rem, 4vw, 2rem)'
+    }}>
+      <div className="page-header" style={{
+        flexDirection: window.innerWidth < 768 ? 'column' : 'row',
+        alignItems: window.innerWidth < 768 ? 'flex-start' : 'center',
+        gap: 'clamp(0.75rem, 2vw, 1.5rem)',
+        marginBottom: 'clamp(1.5rem, 4vw, 2rem)'
+      }}>
+        <div style={{ flex: 1 }}>
+          <h1 className="page-title" style={{
+            fontSize: 'clamp(1.5rem, 4vw, 2rem)'
+          }}>Budget Analytics</h1>
+          <p className="page-subtitle" style={{
+            fontSize: 'clamp(0.875rem, 2vw, 1rem)',
+            marginTop: 'clamp(0.25rem, 1vw, 0.5rem)'
+          }}>Track your spending and savings</p>
         </div>
-        <div className="header-actions">
+        <div className="header-actions" style={{
+          display: 'flex',
+          flexDirection: window.innerWidth < 480 ? 'column' : 'row',
+          gap: 'clamp(0.5rem, 1.5vw, 0.75rem)',
+          alignItems: window.innerWidth < 480 ? 'stretch' : 'center'
+        }}>
           {budgets.length > 1 && (
-            <select className="select" value={budgetId || ''} onChange={e => setBudgetId(e.target.value)}>
+            <select className="select" value={budgetId || ''} onChange={e => setBudgetId(e.target.value)} style={{
+              padding: 'clamp(0.5rem, 1.5vw, 0.75rem)',
+              fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
+              minWidth: 'clamp(150px, 30vw, 200px)'
+            }}>
               {budgets.map(b => (
                 <option key={b.id} value={b.id}>
                   {new Date(b.month).toLocaleString('default', { month:'long', year:'numeric' })}
@@ -107,23 +128,49 @@ export default function AnalyticsPage() {
               ))}
             </select>
           )}
-          <button className="btn btn-secondary" disabled={!budgetId || exporting} onClick={() => handleExport('csv')}>
+          <button className="btn btn-secondary" disabled={!budgetId || exporting} onClick={() => handleExport('csv')} style={{
+            padding: 'clamp(0.5rem, 1.5vw, 0.75rem) clamp(1rem, 2vw, 1.5rem)',
+            fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
+            whiteSpace: 'nowrap'
+          }}>
             Export CSV
           </button>
         </div>
       </div>
 
       {loading ? (
-        <div className="loading-container"><LoadingSpinner /></div>
+        <div className="loading-container" style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: 'clamp(200px, 40vh, 300px)'
+        }}><LoadingSpinner /></div>
       ) : (
         <>
           {/* Key Metrics */}
           {s && (
-            <div className="metrics-grid">
+            <div className="metrics-grid" style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
+              gap: 'clamp(0.75rem, 2vw, 1rem)',
+              marginBottom: 'clamp(1.5rem, 4vw, 2rem)'
+            }}>
               {keyMetrics.map((metric, i) => (
-                <div key={i} className="metric-card">
-                  <div className="metric-label">{metric.label}</div>
-                  <div className="metric-value" style={{ color: metric.color }}>{metric.value}</div>
+                <div key={i} className="metric-card" style={{
+                  padding: 'clamp(1rem, 3vw, 1.5rem)',
+                  borderRadius: 'clamp(8px, 1.5vw, 12px)',
+                  background: 'var(--color-black-800)',
+                  border: '1px solid var(--color-black-600)'
+                }}>
+                  <div className="metric-label" style={{
+                    fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
+                    marginBottom: 'clamp(0.5rem, 1vw, 0.75rem)'
+                  }}>{metric.label}</div>
+                  <div className="metric-value" style={{ 
+                    color: metric.color,
+                    fontSize: 'clamp(1.125rem, 4vw, 1.5rem)',
+                    fontWeight: '600'
+                  }}>{metric.value}</div>
                 </div>
               ))}
             </div>

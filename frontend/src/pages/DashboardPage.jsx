@@ -123,18 +123,33 @@ export default function DashboardPage() {
   return (
     <div className="animate-fade-in">
       {/* Page Header */}
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">
+      <div className="page-header" style={{
+        padding: 'clamp(1rem, 4vw, 2rem)',
+        flexDirection: window.innerWidth < 768 ? 'column' : 'row',
+        alignItems: window.innerWidth < 768 ? 'flex-start' : 'center',
+        gap: 'clamp(0.75rem, 2vw, 1.5rem)'
+      }}>
+        <div style={{ flex: 1 }}>
+          <h1 className="page-title" style={{
+            fontSize: 'clamp(1.5rem, 4vw, 2rem)',
+            lineHeight: '1.2'
+          }}>
             Good {new Date().getHours() < 12 ? 'morning' : 'afternoon'},{' '}
             <span className="text-yellow">{user?.firstName || 'there'}</span> 👋
           </h1>
-          <p className="page-subtitle">
+          <p className="page-subtitle" style={{
+            fontSize: 'clamp(0.875rem, 2vw, 1rem)',
+            marginTop: 'clamp(0.25rem, 1vw, 0.5rem)'
+          }}>
             {new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' })}
           </p>
         </div>
         {!budget && (
-          <button className="btn btn-primary" onClick={() => navigate('/budgets')}>
+          <button className="btn btn-primary" onClick={() => navigate('/budgets')} style={{
+            padding: 'clamp(0.75rem, 2vw, 1rem) clamp(1.5rem, 3vw, 2rem)',
+            fontSize: 'clamp(0.875rem, 2vw, 1rem)',
+            whiteSpace: 'nowrap'
+          }}>
             + Create Budget
           </button>
         )}
@@ -150,52 +165,114 @@ export default function DashboardPage() {
       ) : (
         <>
           {/* ─── Stats Grid ─────────────────────────────── */}
-          <div className="stats-grid">
+          <div className="stats-grid" style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
+            gap: 'clamp(0.75rem, 2vw, 1.5rem)',
+            marginBottom: 'clamp(1.5rem, 4vw, 2rem)'
+          }}>
             {STATS.map((st, i) => (
               <div
                 key={i}
                 className="stat-card animate-slide-up"
-                style={{ '--accent-color': st.accent, animationDelay: `${i * 0.08}s` }}
+                style={{ 
+                  '--accent-color': st.accent, 
+                  animationDelay: `${i * 0.08}s`,
+                  padding: 'clamp(1rem, 3vw, 1.5rem)',
+                  borderRadius: 'clamp(8px, 1.5vw, 12px)'
+                }}
               >
-                <div className="stat-label">{st.label}</div>
-                <div className="stat-value" style={{ color: st.accent }}>{st.value}</div>
-                <div className="flex items-center gap-2 mt-2">
+                <div className="stat-label" style={{
+                  fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
+                  marginBottom: 'clamp(0.5rem, 1vw, 0.75rem)'
+                }}>{st.label}</div>
+                <div className="stat-value" style={{ 
+                  color: st.accent,
+                  fontSize: 'clamp(1.25rem, 4vw, 1.875rem)',
+                  marginBottom: 'clamp(0.5rem, 1vw, 0.75rem)'
+                }}>{st.value}</div>
+                <div className="flex items-center gap-2" style={{
+                  fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
+                  gap: 'clamp(0.5rem, 1vw, 0.75rem)'
+                }}>
                   <span className="stat-sub">{st.sub}</span>
-                  {st.badge && <span className={`stat-badge ${st.badge.type}`}>{st.badge.text}</span>}
+                  {st.badge && <span className={`stat-badge ${st.badge.type}`} style={{
+                    fontSize: 'clamp(0.625rem, 1.5vw, 0.75rem)',
+                    padding: '2px 6px'
+                  }}>{st.badge.text}</span>}
                 </div>
               </div>
             ))}
           </div>
 
           {/* ─── Category Breakdown ─────────────────────── */}
-          <div className="card mb-8">
-            <div className="card-header">
+          <div className="card" style={{
+            marginBottom: 'clamp(1.5rem, 4vw, 2rem)',
+            borderRadius: 'clamp(12px, 2vw, 16px)'
+          }}>
+            <div className="card-header" style={{
+              padding: 'clamp(1rem, 3vw, 1.5rem)'
+            }}>
               <div>
-                <div className="card-title">Budget Breakdown</div>
-                <div className="card-subtitle">50% Needs · 30% Wants · 20% Savings</div>
+                <div className="card-title" style={{
+                  fontSize: 'clamp(1.125rem, 3vw, 1.5rem)'
+                }}>Budget Breakdown</div>
+                <div className="card-subtitle" style={{
+                  fontSize: 'clamp(0.875rem, 2vw, 1rem)',
+                  marginTop: 'clamp(0.25rem, 1vw, 0.5rem)'
+                }}>50% Needs · 30% Wants · 20% Savings</div>
               </div>
             </div>
-            <div style={{ padding:'var(--space-6)', display:'flex', flexDirection:'column', gap:'var(--space-6)' }}>
+            <div style={{ 
+              padding: 'clamp(1rem, 3vw, 1.5rem)', 
+              display:'flex', 
+              flexDirection:'column', 
+              gap: 'clamp(1rem, 3vw, 1.5rem)' 
+            }}>
               {CATEGORY_ROWS.map(cat => (
                 <div key={cat.key}>
-                  <div className="flex justify-between items-center mb-4">
-                    <div className="flex items-center gap-3">
-                      <span className={`badge ${cat.badge}`}>{cat.label}</span>
-                      <span className="text-sm text-grey">Budget: {fmt(cat.budget)}</span>
+                  <div className="flex justify-between items-center" style={{
+                    marginBottom: 'clamp(0.75rem, 2vw, 1rem)',
+                    flexDirection: window.innerWidth < 480 ? 'column' : 'row',
+                    alignItems: window.innerWidth < 480 ? 'flex-start' : 'center',
+                    gap: 'clamp(0.5rem, 1vw, 0.75rem)'
+                  }}>
+                    <div className="flex items-center" style={{
+                      gap: 'clamp(0.5rem, 1.5vw, 0.75rem)',
+                      flexWrap: 'wrap'
+                    }}>
+                      <span className={`badge ${cat.badge}`} style={{
+                        fontSize: 'clamp(0.75rem, 2vw, 0.875rem)'
+                      }}>{cat.label}</span>
+                      <span className="text-sm text-grey" style={{
+                        fontSize: 'clamp(0.75rem, 2vw, 0.875rem)'
+                      }}>Budget: {fmt(cat.budget)}</span>
                     </div>
-                    <div className="flex items-center gap-4 text-sm">
+                    <div className="flex items-center text-sm" style={{
+                      fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
+                      gap: 'clamp(0.75rem, 2vw, 1rem)',
+                      flexDirection: window.innerWidth < 480 ? 'column' : 'row',
+                      alignItems: window.innerWidth < 480 ? 'flex-start' : 'center'
+                    }}>
                       <span>Spent: <strong style={{ color: cat.color }}>{fmt(cat.spent)}</strong></span>
-                      <span style={{ color: cat.remain >= 0 ? 'var(--color-surplus)' : 'var(--color-deficit)' }}>
+                      <span style={{ 
+                        color: cat.remain >= 0 ? 'var(--color-surplus)' : 'var(--color-deficit)' 
+                      }}>
                         {cat.remain >= 0 ? '▲' : '▼'} {fmt(Math.abs(cat.remain))} left
                       </span>
                     </div>
                   </div>
-                  <div className="progress-bar">
+                  <div className="progress-bar" style={{
+                    height: 'clamp(6px, 1.5vw, 8px)',
+                    borderRadius: 'clamp(3px, 1vw, 4px)'
+                  }}>
                     <div
                       className="progress-bar-fill"
                       style={{
                         width: `${Math.min(cat.pctUsed, 100)}%`,
                         '--fill-color': cat.pctUsed > 100 ? 'var(--color-deficit)' : cat.color,
+                        height: '100%',
+                        borderRadius: 'inherit'
                       }}
                     />
                   </div>
