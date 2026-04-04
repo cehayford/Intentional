@@ -1,14 +1,15 @@
 import React, { useState } from 'react'
 
 const VIDEOS = [
-  { id: '1', videoId: 'H3UzN1B2xJk', title: 'How I Manage My Money | Budgeting Tips' },
-  { id: '2', videoId: 'a9hDjrYpJ8U', title: 'Money Habits Keeping You Poor' },
-  { id: '3', videoId: 'kZcVf-0B4pE', title: 'How to Change Your Finances in 6 Months' },
-  { id: '4', videoId: '7X3Y4Z5W6VQ', title: 'Why Everything Changes After $20K' },
-  { id: '5', videoId: '9L8M7N6O5P4', title: 'Pay Off Debt Early or Invest?' },
-  { id: '6', videoId: '3R2T1Y0U9I8', title: '5 Money Rules to Building Wealth' },
-  { id: '7', videoId: '8K7J6H5G4F3', title: 'Things to Do Now If You Want to Be Rich' },
-  { id: '8', videoId: '2Q1W0E9R8T7', title: 'Subconscious Spending Habits' },
+  { id: '1', videoId: 'NEzqHbtGa9U', title: 'How To Manage Your Money Like The 1%' },
+  { id: '2', videoId: 'Q0uXGQu55GM', title: 'Money Habits Keeping You Poor' },
+  { id: '3', videoId: '7XVmhedNiIQ', title: 'How to Change Your Finances in 6 Months' },
+  { id: '4', videoId: 'fxh6BI7JjjE', title: 'Why Everything Changes After $20K' },
+  { id: '5', videoId: '61hBIjorM5k', title: 'Pay Off Debt Early or Invest?' },
+  { id: '6', videoId: 'FpcZdYU4MIg', title: 'Money Truths School Didn\'t Teach You' },
+  { id: '7', videoId: 'uXTREehuNFU', title: '8 TINY Habits to Become Financially Literate' },
+  { id: '8', videoId: 'vJabNEwZIuc', title: 'Master Financial Literacy in 54 Minutes' },
+  { id: '9', videoId: 'i6ABsEk1w6s', title: 'If I Wanted to Become a Millionaire In 2026' },
 ]
 
 function VideoCard({ video }) {
