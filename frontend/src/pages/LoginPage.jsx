@@ -75,13 +75,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Demo hint */}
-        <div className="auth-divider" style={{marginTop:'var(--space-6)'}}>
-          <p style={{fontSize:'var(--text-xs)', color:'var(--color-mid-grey)', background:'var(--color-black-700)', padding:'var(--space-3)', borderRadius:'var(--border-radius)', border:'1px dashed var(--color-black-500)'}}>
-            Demo: <strong style={{color:'var(--color-yellow)'}}>test@demo.com</strong> / <strong style={{color:'var(--color-yellow)'}}>password123</strong>
-          </p>
-        </div>
-
         <p className="auth-link-row">
           No account?{' '}
           <span className="auth-link" onClick={() => navigate('/register')}>Create one →</span>

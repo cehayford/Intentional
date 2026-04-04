@@ -14,13 +14,19 @@ const VIDEOS = [
 function VideoCard({ video }) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [imageError, setImageError] = useState(false)
+  const [imageLoaded, setImageLoaded] = useState(false)
   const thumbUrl = `https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg`
   const fallbackUrl = `https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`
 
   const handleImageError = () => {
     if (!imageError) {
       setImageError(true)
+      setImageLoaded(false)
     }
+  }
+
+  const handleImageLoad = () => {
+    setImageLoaded(true)
   }
 
   return (
@@ -42,16 +48,38 @@ function VideoCard({ video }) {
       >
         {!isPlaying ? (
           <>
-            <img 
-              src={imageError ? fallbackUrl : thumbUrl} 
-              alt={video.title}
-              onError={handleImageError}
-              style={{
-                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-                objectFit: 'cover', opacity: 0.8, transition: 'all 0.3s ease'
-              }}
-              className="video-thumb"
-            />
+            {!imageError && (
+              <img 
+                src={thumbUrl} 
+                alt={video.title}
+                onError={handleImageError}
+                onLoad={handleImageLoad}
+                style={{
+                  position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                  objectFit: 'cover', opacity: imageLoaded ? 0.8 : 0, transition: 'all 0.3s ease'
+                }}
+                className="video-thumb"
+              />
+            )}
+            
+            {imageError && (
+              <div 
+                style={{
+                  position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                  background: 'linear-gradient(135deg, var(--color-black-800), var(--color-black-600))',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: 'var(--color-mid-grey)', fontSize: 'var(--text-sm)', textAlign: 'center',
+                  padding: 'var(--space-4)'
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: 'var(--text-2xl)', marginBottom: 'var(--space-2)' }}>📹</div>
+                  <div>Video Thumbnail</div>
+                  <div style={{ fontSize: 'var(--text-xs)', marginTop: 'var(--space-1)' }}>Click to play</div>
+                </div>
+              </div>
+            )}
+            
             <div style={{
               position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
               width: '60px', height: '60px', background: 'var(--color-yellow)',
