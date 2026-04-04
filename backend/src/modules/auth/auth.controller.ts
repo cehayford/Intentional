@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, Get, Delete, Put, Patch, MethodNotAllowedException } from '@nestjs/common'
+import { Controller, Post, Body, HttpCode, HttpStatus, Get, Delete, Put, Patch, Options, MethodNotAllowedException } from '@nestjs/common'
 import { ApiTags, ApiOperation }   from '@nestjs/swagger'
 import { AuthService }             from './auth.service'
 import { RegisterDto }             from './dto/register.dto'
@@ -14,6 +14,14 @@ export class AuthController {
   @ApiOperation({ summary: 'Register new user account' })
   register(@Body() dto: RegisterDto) {
     return this.auth.register(dto)
+  }
+
+  /** OPTIONS /api/v1/auth/register - CORS preflight */
+  @Options('register')
+  @ApiOperation({ summary: 'CORS preflight for registration' })
+  optionsRegister() {
+    // Return empty response with CORS headers
+    return null
   }
 
   /** Disable GET requests to register endpoint */
