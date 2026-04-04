@@ -16,9 +16,23 @@ const SurplusRing  = lazy(() => import('../components/visualizations/SurplusRing
 function buildLocalSummary(budget) {
   if (!budget) return null
   const inc = Number(budget.totalIncome) || 0
-  const needsBudget   = inc * 0.50
-  const wantsBudget   = inc * 0.30
-  const savingsBudget = inc * 0.20
+  
+  // Use budget rule percentages if available, otherwise fallback to 50/30/20
+  let needsPct = 50, wantsPct = 30, savingsPct = 20
+  
+  if (budget.budgetRule) {
+    needsPct = budget.budgetRule.needsPercentage
+    wantsPct = budget.budgetRule.wantsPercentage
+    savingsPct = budget.budgetRule.savingsPercentage
+  } else if (budget.customNeedsPercentage) {
+    needsPct = budget.customNeedsPercentage
+    wantsPct = budget.customWantsPercentage
+    savingsPct = budget.customSavingsPercentage
+  }
+  
+  const needsBudget   = inc * (needsPct / 100)
+  const wantsBudget   = inc * (wantsPct / 100)
+  const savingsBudget = inc * (savingsPct / 100)
   const needsSpent    = budget.needsSpent   || 0
   const wantsSpent    = budget.wantsSpent   || 0
   const savingsSpent  = budget.savingsSpent || 0
@@ -36,6 +50,8 @@ function buildLocalSummary(budget) {
     needsPercentage:   inc ? (needsSpent   / inc) * 100 : 0,
     wantsPercentage:   inc ? (wantsSpent   / inc) * 100 : 0,
     savingsPercentage: inc ? (savingsSpent / inc) * 100 : 0,
+    ruleName: budget.budgetRule?.name || 'Custom Rule',
+    rulePercentages: { needsPct, wantsPct, savingsPct }
   }
 }
 

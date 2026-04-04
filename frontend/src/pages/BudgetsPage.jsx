@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { budgetsAPI, incomeAPI } from '../api/client'
 import { useToast } from '../context/ToastContext'
 import LoadingSpinner from '../components/layout/LoadingSpinner'
+import BudgetRuleSelector from '../components/budget/BudgetRuleSelector'
 
 const fmt = (n) => new Intl.NumberFormat('en-US', { style:'currency', currency:'USD' }).format(n ?? 0)
 
@@ -13,7 +14,9 @@ export default function BudgetsPage() {
   const [showCreate, setShowCreate] = useState(false)
   const [incomeModal, setIncomeModal] = useState(false)
   const [incomeForm, setIncomeForm] = useState({ sourceName:'', amount:'' })
-  const [creating,  setCreating] = useState(false)
+  const [creating,  setCreating]  = useState(false)
+  const [selectedRuleId, setSelectedRuleId] = useState(null)
+  const [customPercentages, setCustomPercentages] = useState(null)
   const [newBudget, setNewBudget] = useState({
     month: new Date().toISOString().slice(0,7),
     initialIncome: '',
@@ -34,13 +37,35 @@ export default function BudgetsPage() {
   const handleCreate = async (e) => {
     e.preventDefault(); setCreating(true)
     try {
-      const { data } = await budgetsAPI.create({
-        month:         `${newBudget.month}-01`,
+      const createData = {
+        month: `${newBudget.month}-01`,
         initialIncome: Number(newBudget.initialIncome),
         initialSource: newBudget.initialSource,
-      })
+      }
+      
+      // Add budget rule data if selected
+      if (selectedRuleId) {
+        createData.budgetRuleId = selectedRuleId
+      }
+      
+      if (customPercentages) {
+        createData.customNeedsPercentage = customPercentages.needsPercentage
+        createData.customWantsPercentage = customPercentages.wantsPercentage
+        createData.customSavingsPercentage = customPercentages.savingsPercentage
+      }
+      
+      const { data } = await budgetsAPI.create(createData)
       showToast('Budget created!', 'success')
       setShowCreate(false); load()
+      
+      // Reset form
+      setSelectedRuleId(null)
+      setCustomPercentages(null)
+      setNewBudget({
+        month: new Date().toISOString().slice(0,7),
+        initialIncome: '',
+        initialSource: 'Salary',
+      })
     } catch (err) {
       showToast(err.response?.data?.message || 'Failed to create budget', 'error')
     } finally { setCreating(false) }
@@ -202,8 +227,15 @@ export default function BudgetsPage() {
                   <input className="input" type="number" step="0.01" min="1" placeholder="5000.00"
                     value={newBudget.initialIncome}
                     onChange={e => setNewBudget(b => ({ ...b, initialIncome: e.target.value }))} required />
-                  <span className="form-hint">The 50/30/20 allocations will be calculated automatically.</span>
+                  <span className="form-hint">Budget allocations will be calculated based on your selected rule.</span>
                 </div>
+                
+                <BudgetRuleSelector
+                  selectedRuleId={selectedRuleId}
+                  onRuleChange={setSelectedRuleId}
+                  customPercentages={customPercentages}
+                  onCustomPercentagesChange={setCustomPercentages}
+                />
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowCreate(false)}>Cancel</button>

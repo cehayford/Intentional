@@ -105,6 +105,10 @@ export const budgetsAPI = {
   get:    (id)    => api.get(`/budgets/${id}`),
   create: (d)     => api.post('/budgets', d),
   delete: (id)    => api.delete(`/budgets/${id}`),
+  getBudgetRules: () => api.get('/budget-rules'),
+  createBudgetRule: (d) => api.post('/budget-rules', d),
+  updateBudgetRule: (id, d) => api.put(`/budget-rules/${id}`, d),
+  deleteBudgetRule: (id) => api.delete(`/budget-rules/${id}`),
 }
 
 export const incomeAPI = {
