@@ -2,7 +2,6 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository }       from 'typeorm'
 import { Budget }           from './budget.entity'
-import { BudgetRule }       from './budget-rule.entity'
 import { IncomeSource }     from '../income/income-source.entity'
 
 @Injectable()
@@ -10,58 +9,31 @@ export class BudgetsService {
   constructor(
     @InjectRepository(Budget)       private budgets:  Repository<Budget>,
     @InjectRepository(IncomeSource) private income:   Repository<IncomeSource>,
-    @InjectRepository(BudgetRule)   private budgetRules: Repository<BudgetRule>,
   ) {}
 
   async create(userId: string, dto: { 
     month: string; 
     initialIncome: number; 
     initialSource: string;
-    budgetRuleId?: string;
     customNeedsPercentage?: number;
     customWantsPercentage?: number;
     customSavingsPercentage?: number;
   }) {
-    // Get the budget rule (use default if not specified)
-    let budgetRule: BudgetRule
-    if (dto.budgetRuleId) {
-      budgetRule = await this.budgetRules.findOne({ where: { id: dto.budgetRuleId } })
-      if (!budgetRule) {
-        throw new NotFoundException('Budget rule not found')
-      }
-    } else {
-      budgetRule = await this.budgetRules.findOne({ where: { isDefault: true } })
-      if (!budgetRule) {
-        throw new NotFoundException('Default budget rule not found')
-      }
+    // Default percentages if not provided
+    const needsPct = dto.customNeedsPercentage ?? 50
+    const wantsPct = dto.customWantsPercentage ?? 30
+    const savingsPct = dto.customSavingsPercentage ?? 20
+
+    // Validate percentages sum to 100
+    const total = needsPct + wantsPct + savingsPct
+    if (Math.abs(total - 100) > 0.01) {
+      throw new BadRequestException('Percentages must sum to 100%')
     }
 
-    // Calculate allocations using the rule or custom percentages
-    let allocations
-    if (dto.customNeedsPercentage || dto.customWantsPercentage || dto.customSavingsPercentage) {
-      // Use custom percentages
-      const needsPct = dto.customNeedsPercentage ?? budgetRule.needsPercentage
-      const wantsPct = dto.customWantsPercentage ?? budgetRule.wantsPercentage
-      const savingsPct = dto.customSavingsPercentage ?? budgetRule.savingsPercentage
-
-      // Validate percentages sum to 100
-      const total = needsPct + wantsPct + savingsPct
-      if (Math.abs(total - 100) > 0.01) {
-        throw new BadRequestException('Percentages must sum to 100%')
-      }
-
-      allocations = {
-        needsBudget: round2(dto.initialIncome * (needsPct / 100)),
-        wantsBudget: round2(dto.initialIncome * (wantsPct / 100)),
-        savingsBudget: round2(dto.initialIncome * (savingsPct / 100))
-      }
-    } else {
-      // Use rule percentages
-      allocations = {
-        needsBudget: round2(dto.initialIncome * (budgetRule.needsPercentage / 100)),
-        wantsBudget: round2(dto.initialIncome * (budgetRule.wantsPercentage / 100)),
-        savingsBudget: round2(dto.initialIncome * (budgetRule.savingsPercentage / 100))
-      }
+    const allocations = {
+      needsBudget: round2(dto.initialIncome * (needsPct / 100)),
+      wantsBudget: round2(dto.initialIncome * (wantsPct / 100)),
+      savingsBudget: round2(dto.initialIncome * (savingsPct / 100))
     }
 
     const budget = this.budgets.create({
@@ -70,7 +42,6 @@ export class BudgetsService {
       needsBudget: allocations.needsBudget,
       wantsBudget: allocations.wantsBudget,
       savingsBudget: allocations.savingsBudget,
-      budgetRuleId: dto.budgetRuleId,
       customNeedsPercentage: dto.customNeedsPercentage,
       customWantsPercentage: dto.customWantsPercentage,
       customSavingsPercentage: dto.customSavingsPercentage,
@@ -83,19 +54,19 @@ export class BudgetsService {
     const src = this.income.create({ sourceName: dto.initialSource, amount: dto.initialIncome, budget: saved })
     await this.income.save(src)
 
-    return this.budgets.findOne({ where: { id: saved.id }, relations: ['incomeSources', 'budgetRule'] })
+    return this.budgets.findOne({ where: { id: saved.id }, relations: ['incomeSources'] })
   }
 
   async findAll(userId: string) {
     return this.budgets.find({
       where: { user: { id: userId } },
       order: { month: 'DESC' },
-      relations: ['incomeSources', 'budgetRule'],
+      relations: ['incomeSources'],
     })
   }
 
   async findOne(id: string, userId: string) {
-    const b = await this.budgets.findOne({ where: { id, user: { id: userId } }, relations: ['incomeSources', 'budgetRule'] })
+    const b = await this.budgets.findOne({ where: { id, user: { id: userId } }, relations: ['incomeSources'] })
     if (!b) throw new NotFoundException('Budget not found')
     return b
   }
@@ -106,15 +77,24 @@ export class BudgetsService {
     return { message: 'Budget deleted' }
   }
 
-  /** Recalculate totalIncome + 50/30/20 after income source changes */
+  /** Recalculate totalIncome + allocations after income source changes */
   async recalculate(budgetId: string) {
+    const budget = await this.budgets.findOne({ where: { id: budgetId } })
+    if (!budget) throw new NotFoundException('Budget not found')
+    
     const sources = await this.income.find({ where: { budget: { id: budgetId } } })
     const total   = sources.reduce((s, i) => s + Number(i.amount), 0)
+    
+    // Use custom percentages if available, otherwise default to 50/30/20
+    const needsPct = budget.customNeedsPercentage ?? 50
+    const wantsPct = budget.customWantsPercentage ?? 30
+    const savingsPct = budget.customSavingsPercentage ?? 20
+    
     await this.budgets.update(budgetId, {
       totalIncome:  total,
-      needsBudget:   round2(total * 0.50),
-      wantsBudget:   round2(total * 0.30),
-      savingsBudget: round2(total * 0.20),
+      needsBudget:   round2(total * (needsPct / 100)),
+      wantsBudget:   round2(total * (wantsPct / 100)),
+      savingsBudget: round2(total * (savingsPct / 100)),
     })
   }
 }

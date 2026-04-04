@@ -4,7 +4,6 @@ import {
   ManyToOne, OneToMany, JoinColumn,
 } from 'typeorm'
 import { User }          from '../users/user.entity'
-import { BudgetRule }    from './budget-rule.entity'
 import { IncomeSource }  from '../income/income-source.entity'
 import { ExpenseEntry }  from '../expenses/expense-entry.entity'
 
@@ -32,9 +31,6 @@ export class Budget {
   @Column({ name: 'is_active', default: true })
   isActive: boolean
 
-  @Column({ name: 'budget_rule_id', nullable: true })
-  budgetRuleId: string
-
   @Column({ name: 'custom_needs_percentage', type: 'decimal', precision: 5, scale: 2, nullable: true })
   customNeedsPercentage: number
 
@@ -53,10 +49,6 @@ export class Budget {
   @ManyToOne(() => User, u => u.budgets, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User
-
-  @ManyToOne(() => BudgetRule, br => br.id, { onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'budget_rule_id' })
-  budgetRule: BudgetRule
 
   @OneToMany(() => IncomeSource, i => i.budget, { eager: true, cascade: true })
   incomeSources: IncomeSource[]

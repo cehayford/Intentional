@@ -1,10 +1,10 @@
 import {
   Entity, PrimaryGeneratedColumn, Column,
-  CreateDateColumn, UpdateDateColumn, OneToMany,
+  CreateDateColumn, UpdateDateColumn,
+  OneToMany, JoinColumn,
 } from 'typeorm'
 import { ApiProperty } from '@nestjs/swagger'
 import { Budget }       from '../budgets/budget.entity'
-import { BudgetRule }   from '../budgets/budget-rule.entity'
 import { RefreshToken } from './refresh-token.entity'
 
 @Entity('users')
@@ -36,9 +36,6 @@ export class User {
 
   @OneToMany(() => Budget, b => b.user)
   budgets: Budget[]
-
-  @OneToMany(() => BudgetRule, br => br.user)
-  budgetRules: BudgetRule[]
 
   @OneToMany(() => RefreshToken, rt => rt.user)
   refreshTokens: RefreshToken[]

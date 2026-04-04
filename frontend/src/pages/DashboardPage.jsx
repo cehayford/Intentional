@@ -17,14 +17,10 @@ function buildLocalSummary(budget) {
   if (!budget) return null
   const inc = Number(budget.totalIncome) || 0
   
-  // Use budget rule percentages if available, otherwise fallback to 50/30/20
+  // Use custom percentages if available, otherwise fallback to 50/30/20
   let needsPct = 50, wantsPct = 30, savingsPct = 20
   
-  if (budget.budgetRule) {
-    needsPct = budget.budgetRule.needsPercentage
-    wantsPct = budget.budgetRule.wantsPercentage
-    savingsPct = budget.budgetRule.savingsPercentage
-  } else if (budget.customNeedsPercentage) {
+  if (budget.customNeedsPercentage) {
     needsPct = budget.customNeedsPercentage
     wantsPct = budget.customWantsPercentage
     savingsPct = budget.customSavingsPercentage
@@ -50,7 +46,7 @@ function buildLocalSummary(budget) {
     needsPercentage:   inc ? (needsSpent   / inc) * 100 : 0,
     wantsPercentage:   inc ? (wantsSpent   / inc) * 100 : 0,
     savingsPercentage: inc ? (savingsSpent / inc) * 100 : 0,
-    ruleName: budget.budgetRule?.name || 'Custom Rule',
+    ruleName: 'Custom Rule',
     rulePercentages: { needsPct, wantsPct, savingsPct }
   }
 }

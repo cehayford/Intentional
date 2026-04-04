@@ -3,14 +3,9 @@ import { NestFactory } from '@nestjs/core'
 import { ValidationPipe } from '@nestjs/common'
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 import { AppModule } from './app.module'
-import { BudgetRuleService } from './modules/budgets/budget-rule.service'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
-
-  // Initialize predefined budget rules
-  const budgetRuleService = app.get(BudgetRuleService)
-  await budgetRuleService.createPredefinedRules()
 
   // Keep root path healthy for basic platform probes and manual checks.
   const httpAdapter = app.getHttpAdapter()
