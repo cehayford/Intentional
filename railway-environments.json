@@ -8,14 +8,14 @@
         "DATABASE_URL": "${{RAILWAY_DATABASE_URL}}",
         "JWT_SECRET": "${{RAILWAY_SECRET_JWT}}",
         "REDIS_URL": "${{RAILWAY_REDIS_URL}}",
-        "FRONTEND_URL": "https://intentional-app.railway.app",
-        "BACKEND_URL": "https://intentional-api.railway.app",
+        "FRONTEND_URL": "https://intentional-fr.up.railway.app",
+        "BACKEND_URL": "https://intentional-bknd.up.railway.app",
         "LOG_LEVEL": "info",
         "ENABLE_METRICS": "true"
       },
       "domains": {
-        "frontend": "intentional-app.railway.app",
-        "backend": "intentional-api.railway.app"
+        "frontend": "intentional-fr.up.railway.app",
+        "backend": "intentional-bknd.up.railway.app"
       },
       "scaling": {
         "frontend": {
