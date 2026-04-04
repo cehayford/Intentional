@@ -13,7 +13,6 @@ export default function RegisterPage() {
 
   const validate = () => {
     const e = {}
-    if (!form.firstName.trim()) e.firstName = 'First name required'
     if (!form.email.includes('@')) e.email = 'Valid email required'
     if (form.password.length < 8) e.password = 'Minimum 8 characters'
     if (form.password !== form.confirm) e.confirm = 'Passwords do not match'
@@ -31,8 +30,18 @@ export default function RegisterPage() {
       navigate('/dashboard')
     } catch (err) {
       const msg = err.response?.data?.message
-      setErrors({ api: Array.isArray(msg) ? msg.join(', ') : msg || 'Registration failed' })
-      showToast('Registration failed', 'error')
+      let errorMessage = 'Registration failed'
+      
+      if (msg?.includes('already registered')) {
+        errorMessage = 'Email already registered. Try logging in instead.'
+      } else if (msg?.includes('Password')) {
+        errorMessage = 'Password does not meet requirements.'
+      } else if (msg) {
+        errorMessage = Array.isArray(msg) ? msg.join(', ') : msg
+      }
+      
+      setErrors({ api: errorMessage })
+      showToast(errorMessage, 'error')
     } finally { setLoading(false) }
   }
 
