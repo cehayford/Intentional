@@ -3,9 +3,8 @@ services:
     name: intentional-backend
     runtime: node
     plan: free
-    rootDir: backend
-    buildCommand: npm ci --include=dev && npm run build
-    startCommand: npm run start:prod
+    buildCommand: cd backend && npm ci --include=dev && npm run build
+    startCommand: cd backend && npm run start:prod
     healthCheckPath: /health
     envVars:
       - key: NODE_VERSION
@@ -25,8 +24,7 @@ services:
     name: intentional-frontend
     runtime: static
     plan: free
-    rootDir: frontend
-    buildCommand: npm ci && npm run build
+    buildCommand: cd frontend && npm ci && npm run build
     staticPublishPath: frontend/dist
     routes:
       - type: rewrite
