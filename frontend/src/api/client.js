@@ -1,20 +1,18 @@
 import axios from 'axios'
 
-// ─── Axios Instance ─────────────────────────────────────────
-// Dynamic baseURL with fallbacks
+const withApiPrefix = (baseUrl) => `${baseUrl.replace(/\/+$/, '')}/api/v1`
+
 const getBaseURL = () => {
-  // 1. Use environment variable if set
-  if (process.env.REACT_APP_API_URL) {
-    return `${process.env.REACT_APP_API_URL}/api/v1`
+  const configuredApiUrl = import.meta.env.VITE_API_URL?.trim()
+  if (configuredApiUrl) {
+    return withApiPrefix(configuredApiUrl)
   }
-  
-  // 2. Use production URL if in production
-  if (process.env.NODE_ENV === 'production') {
-    return 'https://intentional-bknd.up.railway.app/api/v1'
+
+  if (import.meta.env.DEV) {
+    return 'http://localhost:3001/api/v1'
   }
-  
-  // 3. Default to local development
-  return 'https://intentional-bknd.up.railway.app/api/v1'
+
+  return '/api/v1'
 }
 
 const api = axios.create({
@@ -23,7 +21,6 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
-// ─── Request Interceptor: attach Bearer token ────────────────
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken')
@@ -33,7 +30,6 @@ api.interceptors.request.use(
   (err) => Promise.reject(err)
 )
 
-// ─── Response Interceptor: auto-refresh on 401 ───────────────
 let isRefreshing = false
 let failedQueue  = []
 
@@ -92,7 +88,6 @@ api.interceptors.response.use(
   }
 )
 
-// ─── Typed API helpers ───────────────────────────────────────
 export const authAPI = {
   register: (d)  => api.post('/auth/register', d),
   login:    (d)  => api.post('/auth/login', d),

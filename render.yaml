@@ -1,0 +1,47 @@
+services:
+  - type: web
+    name: intentional-backend
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm run start:prod
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.19.0
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: intentional-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        value: https://intentional-fr.onrender.com
+
+  - type: web
+    name: intentional-frontend
+    runtime: static
+    plan: free
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: frontend/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: NODE_VERSION
+        value: 20.19.0
+      - key: VITE_APP_ENV
+        value: production
+      - key: VITE_API_URL
+        value: https://intentional-h21k.onrender.com
+
+databases:
+  - name: intentional-db
+    plan: free
+    databaseName: intentional
+    user: intentional
